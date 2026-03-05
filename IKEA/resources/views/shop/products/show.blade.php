@@ -2,56 +2,105 @@
 
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ $product->name }}</h2>
+        <div class="shop-page-header">
+            <div>
+                <p class="shop-breadcrumb">
+                    <a href="{{ route('shop.index') }}">Shop</a>
+                    <span aria-hidden="true"> / </span>
+                    <a href="{{ route('shop.index') }}?category={{ $product->category->id }}">
+                        {{ $product->category->name }}
+                    </a>
+                    <span aria-hidden="true"> / </span>
+                    <span>{{ $product->name }}</span>
+                </p>
+            </div>
+        </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white shadow-sm sm:rounded-lg p-6 flex flex-col md:flex-row gap-8">
+    <div class="shop-page">
+        <div class="product-detail-wrapper">
 
-                {{-- Product Image --}}
-                <div class="md:w-1/2">
-                    @if($product->image)
-                        <img src="{{ Storage::url($product->image) }}" class="w-full rounded-lg object-cover">
+            {{-- ── IMAGE PANEL ── --}}
+            <div class="product-detail-image">
+                @if($product->image)
+                    <img
+                        src="{{ Storage::url($product->image) }}"
+                        alt="{{ $product->name }}"
+                        class="product-detail-img"
+                    >
+                @else
+                    <div class="product-detail-img-placeholder" aria-hidden="true">
+                        {{ ['🛋️','🛏️','🪑','🍳','🪞','💡','🪴','🛁'][($product->id - 1) % 8] }}
+                    </div>
+                @endif
+            </div>
+
+            {{-- ── INFO PANEL ── --}}
+            <div class="product-detail-info">
+
+                <p class="product-category-label">{{ $product->category->name }}</p>
+                <h1 class="product-detail-name">{{ $product->name }}</h1>
+                <p class="product-detail-price">₱{{ number_format($product->price, 0) }}</p>
+
+                @if($product->description)
+                    <p class="product-detail-desc">{{ $product->description }}</p>
+                @endif
+
+                {{-- Stock status --}}
+                <div class="product-detail-stock">
+                    @if($product->stock > 5)
+                        <span class="stock-badge stock-in">✓ In Stock ({{ $product->stock }} available)</span>
+                    @elseif($product->stock > 0)
+                        <span class="stock-badge stock-low">⚠ Only {{ $product->stock }} left!</span>
                     @else
-                        <div class="w-full h-64 bg-gray-100 flex items-center justify-center text-gray-400 rounded-lg">No Image</div>
+                        <span class="stock-badge stock-out">✗ Out of Stock</span>
                     @endif
                 </div>
 
-                {{-- Product Details --}}
-                <div class="md:w-1/2">
-                    <p class="text-sm text-gray-400 mb-1">{{ $product->category->name }}</p>
-                    <h1 class="text-2xl font-bold text-gray-800 mb-2">{{ $product->name }}</h1>
-                    <p class="text-3xl font-bold text-blue-600 mb-4">₱{{ number_format($product->price, 2) }}</p>
-
-                    <p class="text-gray-600 mb-4">{{ $product->description ?? 'No description available.' }}</p>
-
-                    <p class="mb-4 {{ $product->stock > 0 ? 'text-green-600' : 'text-red-500' }} font-medium">
-                        {{ $product->stock > 0 ? '✓ In Stock (' . $product->stock . ' available)' : '✗ Out of Stock' }}
-                    </p>
-
+                {{-- Add to cart / CTA --}}
+                <div class="product-detail-actions">
                     @auth
-    @if($product->stock > 0)
-        <form action="{{ route('cart.add', $product) }}" method="POST">
-            @csrf
-            <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 font-semibold">
-                Add to Cart
-            </button>
-        </form>
-    @else
-        <button disabled class="w-full bg-gray-300 text-gray-500 py-3 rounded-lg font-semibold cursor-not-allowed">
-            Unavailable
-        </button>
-    @endif
-@else
-    <a href="{{ route('login') }}" class="block w-full text-center bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 font-semibold">
-        Login to Add to Cart
-    </a>
-@endauth
-
-                    <a href="{{ route('shop.index') }}" class="block text-center mt-3 text-gray-500 hover:underline">← Back to Shop</a>
+                        @if($product->stock > 0 && $product->is_available)
+                            <form action="{{ route('cart.add', $product) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="product-detail-add-btn">
+                                    Add to Cart
+                                </button>
+                            </form>
+                        @else
+                            <button disabled class="product-detail-add-btn product-detail-add-btn--disabled">
+                                Unavailable
+                            </button>
+                        @endif
+                    @else
+                        <a href="{{ route('login') }}" class="product-detail-add-btn">
+                            Log in to Add to Cart
+                        </a>
+                    @endauth
                 </div>
+
+                {{-- Trust badges --}}
+                <div class="product-detail-trust">
+                    <div class="trust-item">
+                        <span aria-hidden="true">🚚</span>
+                        <span>Free delivery over ₱5,000</span>
+                    </div>
+                    <div class="trust-item">
+                        <span aria-hidden="true">🔄</span>
+                        <span>365-day returns</span>
+                    </div>
+                    <div class="trust-item">
+                        <span aria-hidden="true">🛡️</span>
+                        <span>Secure checkout</span>
+                    </div>
+                </div>
+
+                <a href="{{ route('shop.index') }}" class="product-detail-back">
+                    ← Back to Shop
+                </a>
+
             </div>
         </div>
     </div>
+
 </x-app-layout>

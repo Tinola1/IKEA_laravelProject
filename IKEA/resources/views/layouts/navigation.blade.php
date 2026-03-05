@@ -1,151 +1,155 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
-    <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
-                    </a>
-                </div>
+<header class="ikea-site-header" x-data="{ mobileOpen: false, profileOpen: false }">
 
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('shop.index')" :active="request()->routeIs('shop.*')">
-                        {{ __('Shop') }}
-                    </x-nav-link>
-                    @auth
-               @if(Auth::user()->hasRole('admin'))
-    <x-nav-link :href="route('admin.orders.index')" :active="request()->routeIs('admin.orders.*')">
-        🗂️ Admin Orders
-    </x-nav-link>
-    <x-nav-link :href="route('admin.inventory.index')" :active="request()->routeIs('admin.inventory.*')">
-        📦 Inventory
-    </x-nav-link>
+    {{-- Logo --}}
+    <a href="/" class="logo" aria-label="IKEA Philippines home">
+        <div class="logo-box" aria-hidden="true">IKEA</div>
+    </a>
 
-        </x-nav-link>
+    {{-- Desktop nav links --}}
+    <nav class="ikea-nav-links" aria-label="Main navigation">
+
+        <a href="{{ route('shop.index') }}"
+           class="{{ request()->routeIs('shop.*') ? 'ikea-nav-active' : '' }}">
+            Shop
+        </a>
+
+        @auth
+            <a href="{{ route('cart.index') }}"
+               class="{{ request()->routeIs('cart.*') ? 'ikea-nav-active' : '' }}"
+               aria-label="Shopping cart">
+                🛒 Cart
+                @php $cartCount = \App\Models\Cart::where('user_id', auth()->id())->sum('quantity'); @endphp
+                @if($cartCount > 0)
+                    <span class="ikea-cart-badge">{{ $cartCount }}</span>
+                @endif
+            </a>
+
+            <a href="{{ route('orders.index') }}"
+               class="{{ request()->routeIs('orders.*') ? 'ikea-nav-active' : '' }}">
+                My Orders
+            </a>
+
+            @if(Auth::user()->hasRole('admin'))
+                <a href="{{ route('admin.orders.index') }}"
+                   class="{{ request()->routeIs('admin.orders.*') ? 'ikea-nav-active' : '' }}">
+                    Admin Orders
+                </a>
+                <a href="{{ route('admin.inventory.index') }}"
+                   class="{{ request()->routeIs('admin.inventory.*') ? 'ikea-nav-active' : '' }}">
+                    Inventory
+                </a>
             @endif
-            
-                    @auth
-                        <x-nav-link :href="route('cart.index')" :active="request()->routeIs('cart.*')">
-                            🛒 Cart
-                            @php
-                                $cartCount = \App\Models\Cart::where('user_id', auth()->id())->sum('quantity');
-                            @endphp
-                            @if($cartCount > 0)
-                                <span class="ml-1 bg-blue-600 text-white text-xs rounded-full px-2 py-0.5">{{ $cartCount }}</span>
-                            @endif
-                        </x-nav-link>
-                        <x-nav-link :href="route('orders.index')" :active="request()->routeIs('orders.*')">
-                            📦 My Orders
-                        </x-nav-link>
-                    @endauth
-                </div>
-            </div>
 
-            <!-- Settings Dropdown -->
-            @auth
-                <div class="hidden sm:flex sm:items-center sm:ms-6">
-                    <x-dropdown align="right" width="48">
-                        <x-slot name="trigger">
-                            <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                                <div>{{ Auth::user()->name }}</div>
-                                <div class="ms-1">
-                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                            </button>
-                        </x-slot>
-
-                        <x-slot name="content">
-                            <x-dropdown-link :href="route('profile.edit')">
-                                {{ __('Profile') }}
-                            </x-dropdown-link>
-
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <x-dropdown-link :href="route('logout')"
-                                        onclick="event.preventDefault();
-                                                    this.closest('form').submit();">
-                                    {{ __('Log Out') }}
-                                </x-dropdown-link>
-                            </form>
-                        </x-slot>
-                    </x-dropdown>
-                </div>
-            @else
-                <div class="hidden sm:flex sm:items-center sm:ms-6 gap-2">
-                    <a href="{{ route('login') }}" class="text-sm font-medium text-gray-500 hover:text-gray-700">Log in</a>
-                    <a href="{{ route('register') }}" class="text-sm font-medium bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Register</a>
-                </div>
-            @endauth
-
-            <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            {{-- Profile dropdown --}}
+            <div class="ikea-nav-dropdown" x-data="{ open: false }">
+                <button
+                    @click="open = !open"
+                    @click.outside="open = false"
+                    class="ikea-nav-dropdown-trigger"
+                    :aria-expanded="open"
+                    aria-haspopup="true"
+                >
+                    {{ Auth::user()->name }}
+                    <svg class="ikea-nav-chevron" :class="{ 'rotate-180': open }"
+                         width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
                     </svg>
                 </button>
-            </div>
-        </div>
-    </div>
 
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('shop.index')" :active="request()->routeIs('shop.*')">
-                {{ __('Shop') }}
-            </x-responsive-nav-link>
-            @auth
-                <x-responsive-nav-link :href="route('cart.index')" :active="request()->routeIs('cart.*')">
-                    🛒 Cart
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('orders.index')" :active="request()->routeIs('orders.*')">
-                    📦 My Orders
-                </x-responsive-nav-link>
-            @endauth
-        </div>
-
-        <!-- Responsive Settings Options -->
-        @auth
-            <div class="pt-4 pb-1 border-t border-gray-200">
-                <div class="px-4">
-                    <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                    <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
-                </div>
-
-                <div class="mt-3 space-y-1">
-                    <x-responsive-nav-link :href="route('profile.edit')">
-                        {{ __('Profile') }}
-                    </x-responsive-nav-link>
-
+                <div
+                    x-show="open"
+                    x-transition:enter="transition ease-out duration-100"
+                    x-transition:enter-start="opacity-0 scale-95"
+                    x-transition:enter-end="opacity-100 scale-100"
+                    x-transition:leave="transition ease-in duration-75"
+                    x-transition:leave-start="opacity-100 scale-100"
+                    x-transition:leave-end="opacity-0 scale-95"
+                    class="ikea-nav-dropdown-menu"
+                    role="menu"
+                >
+                    <a href="{{ route('dashboard') }}" class="ikea-nav-dropdown-item" role="menuitem">
+                        Dashboard
+                    </a>
+                    <a href="{{ route('profile.edit') }}" class="ikea-nav-dropdown-item" role="menuitem">
+                        Profile
+                    </a>
+                    <div class="ikea-nav-dropdown-divider"></div>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <x-responsive-nav-link :href="route('logout')"
-                                onclick="event.preventDefault();
-                                            this.closest('form').submit();">
-                            {{ __('Log Out') }}
-                        </x-responsive-nav-link>
+                        <button type="submit" class="ikea-nav-dropdown-item ikea-nav-dropdown-item--danger" role="menuitem">
+                            Log Out
+                        </button>
                     </form>
                 </div>
             </div>
+
         @else
-            <div class="pt-4 pb-1 border-t border-gray-200">
-                <div class="mt-3 space-y-1 px-4">
-                    <a href="{{ route('login') }}" class="block text-sm font-medium text-gray-500 hover:text-gray-700 py-2">Log in</a>
-                    <a href="{{ route('register') }}" class="block text-sm font-medium text-gray-500 hover:text-gray-700 py-2">Register</a>
-                </div>
-            </div>
+            <a href="{{ route('login') }}">Log in</a>
+            @if (Route::has('register'))
+                <a href="{{ route('register') }}" class="btn-primary">Create account</a>
+            @endif
+        @endauth
+    </nav>
+
+    {{-- Mobile hamburger --}}
+    <button
+        class="ikea-nav-toggle"
+        @click="mobileOpen = !mobileOpen"
+        :aria-expanded="mobileOpen"
+        aria-controls="ikea-mobile-nav"
+        aria-label="Toggle navigation"
+        :class="{ 'ikea-nav-toggle--open': mobileOpen }"
+    >
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    {{-- Mobile nav panel --}}
+    <div
+        id="ikea-mobile-nav"
+        class="ikea-mobile-nav"
+        x-show="mobileOpen"
+        x-transition:enter="transition ease-out duration-150"
+        x-transition:enter-start="opacity-0 -translate-y-2"
+        x-transition:enter-end="opacity-100 translate-y-0"
+        x-transition:leave="transition ease-in duration-100"
+        x-transition:leave-start="opacity-100 translate-y-0"
+        x-transition:leave-end="opacity-0 -translate-y-2"
+        @click.outside="mobileOpen = false"
+    >
+        <a href="{{ route('shop.index') }}" class="ikea-mobile-nav-item">Shop</a>
+
+        @auth
+            <a href="{{ route('cart.index') }}" class="ikea-mobile-nav-item">
+                🛒 Cart
+                @if($cartCount > 0)
+                    <span class="ikea-cart-badge">{{ $cartCount }}</span>
+                @endif
+            </a>
+            <a href="{{ route('orders.index') }}" class="ikea-mobile-nav-item">My Orders</a>
+            <a href="{{ route('dashboard') }}" class="ikea-mobile-nav-item">Dashboard</a>
+            <a href="{{ route('profile.edit') }}" class="ikea-mobile-nav-item">Profile</a>
+
+            @if(Auth::user()->hasRole('admin'))
+                <div class="ikea-mobile-nav-divider"></div>
+                <a href="{{ route('admin.orders.index') }}" class="ikea-mobile-nav-item">Admin Orders</a>
+                <a href="{{ route('admin.inventory.index') }}" class="ikea-mobile-nav-item">Inventory</a>
+            @endif
+
+            <div class="ikea-mobile-nav-divider"></div>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="ikea-mobile-nav-item ikea-mobile-nav-item--danger">
+                    Log Out
+                </button>
+            </form>
+        @else
+            <a href="{{ route('login') }}" class="ikea-mobile-nav-item">Log in</a>
+            @if (Route::has('register'))
+                <a href="{{ route('register') }}" class="ikea-mobile-nav-item">Create account</a>
+            @endif
         @endauth
     </div>
-</nav>
+
+</header>

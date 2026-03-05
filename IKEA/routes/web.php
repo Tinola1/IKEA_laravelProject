@@ -10,10 +10,19 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\InventoryController;
+use App\Http\Controllers\HomeController;
 
+// Before
 Route::get('/', function () {
     return view('welcome');
 });
+
+// After
+use App\Models\Product;
+use App\Models\Category;
+
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
 
 Route::get('/dashboard', function () {
     return view('dashboard');

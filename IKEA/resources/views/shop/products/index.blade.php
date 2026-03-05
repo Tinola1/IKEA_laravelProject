@@ -1,58 +1,139 @@
 @php use Illuminate\Support\Facades\Storage; @endphp
+
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Shop</h2>
+        <div class="shop-page-header">
+            <div>
+                <h2 class="shop-page-title">All Products</h2>
+                <p class="shop-page-subtitle">
+                    {{ $products->total() }} {{ Str::plural('product', $products->total()) }} found
+                </p>
+            </div>
+        </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="shop-page">
 
-            {{-- Search and Filter --}}
-            <form method="GET" action="{{ route('shop.index') }}" class="mb-6 flex gap-3 flex-wrap">
-                <input
-                    type="text"
-                    name="search"
-                    value="{{ request('search') }}"
-                    placeholder="Search products..."
-                    class="border-gray-300 rounded-md shadow-sm w-64"
-                >
-                <select name="category" class="border-gray-300 rounded-md shadow-sm">
+        {{-- ── FILTER BAR ── --}}
+        <form method="GET" action="{{ route('shop.index') }}" class="shop-filter-bar">
+
+            <div class="shop-filter-inner">
+                <div class="filter-search-wrap">
+                    <span class="filter-search-icon" aria-hidden="true">🔍</span>
+                    <input
+                        type="text"
+                        name="search"
+                        value="{{ request('search') }}"
+                        placeholder="Search products…"
+                        class="filter-search-input"
+                        aria-label="Search products"
+                    >
+                </div>
+
+                <select name="category" class="filter-select" aria-label="Filter by category">
                     <option value="">All Categories</option>
                     @foreach($categories as $category)
-                        <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
+                        <option value="{{ $category->id }}"
+                            {{ request('category') == $category->id ? 'selected' : '' }}>
                             {{ $category->name }}
                         </option>
                     @endforeach
                 </select>
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Filter</button>
-                <a href="{{ route('shop.index') }}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">Reset</a>
-            </form>
 
-            {{-- Product Grid --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                @forelse($products as $product)
-                <a href="{{ route('shop.show', $product) }}" class="bg-white rounded-lg shadow hover:shadow-md transition overflow-hidden">
-                    @if($product->image)
-                        <img src="{{ Storage::url($product->image) }}" class="w-full h-48 object-cover">
-                    @else
-                        <div class="w-full h-48 bg-gray-100 flex items-center justify-center text-gray-400">No Image</div>
-                    @endif
-                    <div class="p-4">
-                        <p class="text-xs text-gray-400 mb-1">{{ $product->category->name }}</p>
-                        <h3 class="font-semibold text-gray-800">{{ $product->name }}</h3>
-                        <p class="text-blue-600 font-bold mt-1">₱{{ number_format($product->price, 2) }}</p>
-                        <p class="text-xs mt-1 {{ $product->stock > 0 ? 'text-green-600' : 'text-red-500' }}">
-                            {{ $product->stock > 0 ? 'In Stock' : 'Out of Stock' }}
-                        </p>
-                    </div>
-                </a>
-                @empty
-                <p class="text-gray-500 col-span-4">No products found.</p>
-                @endforelse
+                <div class="filter-actions">
+                    <button type="submit" class="filter-btn-apply">Apply</button>
+                    <a href="{{ route('shop.index') }}" class="filter-btn-reset">Reset</a>
+                </div>
             </div>
 
-            {{-- Pagination --}}
-            <div class="mt-6">{{ $products->links() }}</div>
+            {{-- Active filter indicator --}}
+            @if(request('search') || request('category'))
+                <div class="filter-active-bar">
+                    <span class="filter-active-label">Filtering by:</span>
+                    @if(request('search'))
+                        <span class="filter-tag">
+                            Search: "{{ request('search') }}"
+                            <a href="{{ route('shop.index', array_merge(request()->except('search', 'page'))) }}" aria-label="Remove search filter">×</a>
+                        </span>
+                    @endif
+                    @if(request('category'))
+                        <span class="filter-tag">
+                            Category: {{ $categories->firstWhere('id', request('category'))?->name }}
+                            <a href="{{ route('shop.index', array_merge(request()->except('category', 'page'))) }}" aria-label="Remove category filter">×</a>
+                        </span>
+                    @endif
+                </div>
+            @endif
+
+        </form>
+
+        {{-- ── PRODUCT GRID ── --}}
+        <div class="shop-grid-wrapper">
+            <div class="products-grid shop-products-grid">
+                @forelse($products as $product)
+                    @php
+                        $inStock = $product->stock > 0 && $product->is_available;
+                        if ($product->stock === 0 || !$product->is_available) {
+                            $badge = 'Out of Stock'; $badgeClass = 'sale';
+                        } elseif ($product->stock <= 5) {
+                            $badge = 'Low Stock'; $badgeClass = 'sale';
+                        } elseif ($product->price < 5000) {
+                            $badge = 'Great Value'; $badgeClass = 'new';
+                        } else {
+                            $badge = null; $badgeClass = '';
+                        }
+                    @endphp
+
+                    <a href="{{ route('shop.show', $product) }}" class="product-card">
+
+                        <div class="product-img">
+                            @if($product->image)
+                                <img
+                                    src="{{ Storage::url($product->image) }}"
+                                    alt="{{ $product->name }}"
+                                    style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;"
+                                    loading="lazy"
+                                >
+                            @else
+                                <span aria-hidden="true" class="product-img-placeholder">
+                                    {{ ['🛋️','🛏️','🪑','🍳','🪞','💡','🪴','🛁'][($product->id - 1) % 8] }}
+                                </span>
+                            @endif
+
+                            @if($badge)
+                                <span class="product-badge {{ $badgeClass }}">{{ $badge }}</span>
+                            @endif
+                        </div>
+
+                        <div class="product-info">
+                            <div class="product-category-label">{{ $product->category->name }}</div>
+                            <div class="name">{{ $product->name }}</div>
+                            <div class="desc desc-clamp">{{ $product->description }}</div>
+                            <div class="product-price-row">
+                                <span class="price">₱{{ number_format($product->price, 0) }}</span>
+                                @if($product->stock <= 5 && $product->stock > 0)
+                                    <span class="stock-warning">Only {{ $product->stock }} left</span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="add-btn {{ !$inStock ? 'add-btn-disabled' : '' }}">
+                            {{ $inStock ? 'View Product' : 'Out of Stock' }}
+                        </div>
+
+                    </a>
+
+                @empty
+                    <div class="shop-empty">
+                        <div class="shop-empty-icon" aria-hidden="true">🔍</div>
+                        <h3>No products found</h3>
+                        <p>Try adjusting your search or filter to find what you're looking for.</p>
+                        <a href="{{ route('shop.index') }}" class="cta-main" style="display:inline-block;margin-top:16px;">
+                            Clear filters
+                        </a>
+                    </div>
+                @endforelse
+            </div>
         </div>
     </div>
 </x-app-layout>
