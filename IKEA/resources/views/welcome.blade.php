@@ -18,17 +18,11 @@
         <a class="skip-link" href="#main-content">Skip to main content</a>
 
         {{-- ── TOP STRIP ── --}}
-        <div class="top-strip" aria-label="Promotion">
+        {{--<div class="top-strip" aria-label="Promotion">
             🚚 Free delivery on orders over ₱5,000 — Shop now and save!
-        </div>
+        </div>--}}
 
         {{-- ── HEADER ── --}}
-        {{--
-            welcome.blade.php has its own standalone header (no x-app-layout).
-            Uses vanilla JS for mobile toggle since app.js is not loaded here.
-            Class names match ikea.css: .ikea-site-header, .ikea-nav-links,
-            .ikea-nav-toggle, .ikea-mobile-nav
-        --}}
         <header class="ikea-site-header" role="banner">
 
             <a href="/" class="logo" aria-label="IKEA Philippines home">
@@ -50,37 +44,6 @@
                     @endauth
                 @endif
             </nav>
-
-            {{-- Mobile hamburger --}}
-            <button
-                id="welcome-nav-toggle"
-                class="ikea-nav-toggle"
-                aria-label="Toggle navigation"
-                aria-expanded="false"
-                aria-controls="welcome-mobile-nav"
-                onclick="toggleWelcomeNav(this)"
-            >
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-
-            {{-- Mobile nav panel — hidden by default, shown via JS --}}
-            <div id="welcome-mobile-nav" class="ikea-mobile-nav" style="display:none;" role="navigation" aria-label="Mobile navigation">
-                @if (Route::has('login'))
-                    @auth
-                        <a href="{{ url('/dashboard') }}" class="ikea-mobile-nav-item">Dashboard</a>
-                        <a href="{{ route('shop.index') }}" class="ikea-mobile-nav-item">Shop</a>
-                        <a href="{{ route('cart.index') }}" class="ikea-mobile-nav-item">🛒 Cart</a>
-                    @else
-                        <a href="{{ route('login') }}" class="ikea-mobile-nav-item">Log in</a>
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="ikea-mobile-nav-item">Create account</a>
-                        @endif
-                    @endauth
-                @endif
-            </div>
-
         </header>
 
         {{-- ── MAIN ── --}}
@@ -293,7 +256,7 @@
                                 @unless($inStock) disabled @endunless
                                 @unless($inStock) style="opacity:0.5;cursor:not-allowed;background:#ccc;" @endunless
                             >
-                                {{ $inStock ? 'Add to cart' : 'Out of Stock' }}
+                                {{ $inStock ? 'View Product' : 'Out of Stock' }}
                             </button>
 
                         </a>
@@ -379,42 +342,5 @@
                 </div>
             </div>
         </footer>
-
-        {{--
-            Mobile nav toggle — vanilla JS only (app.js / Alpine not loaded on this page).
-            Targets .ikea-nav-toggle and #welcome-mobile-nav to match ikea.css class names.
-        --}}
-        <script>
-            function toggleWelcomeNav(btn) {
-                const nav    = document.getElementById('welcome-mobile-nav');
-                const isOpen = nav.style.display === 'flex';
-                nav.style.display = isOpen ? 'none' : 'flex';
-                btn.setAttribute('aria-expanded', !isOpen);
-                btn.classList.toggle('ikea-nav-toggle--open', !isOpen);
-            }
-
-            // Close on outside click
-            document.addEventListener('click', function (e) {
-                const nav = document.getElementById('welcome-mobile-nav');
-                const btn = document.getElementById('welcome-nav-toggle');
-                if (nav.style.display === 'flex' && !nav.contains(e.target) && !btn.contains(e.target)) {
-                    nav.style.display = 'none';
-                    btn.setAttribute('aria-expanded', 'false');
-                    btn.classList.remove('ikea-nav-toggle--open');
-                }
-            });
-
-            // Close on resize to desktop
-            window.addEventListener('resize', function () {
-                if (window.innerWidth > 900) {
-                    const nav = document.getElementById('welcome-mobile-nav');
-                    const btn = document.getElementById('welcome-nav-toggle');
-                    nav.style.display = 'none';
-                    btn.setAttribute('aria-expanded', 'false');
-                    btn.classList.remove('ikea-nav-toggle--open');
-                }
-            });
-        </script>
-
     </body>
 </html>

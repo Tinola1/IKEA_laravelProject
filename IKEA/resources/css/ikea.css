@@ -1461,3 +1461,315 @@ footer {
     .filter-btn-apply,
     .filter-btn-reset   { width: 100%; justify-content: center; }
 }
+
+/* ============================================================
+   AUTH PAGES (login, register)
+   Append to the bottom of ikea.css
+   ============================================================ */
+
+/* Full-screen split layout */
+.auth-body {
+    min-height: 100vh;
+    background: var(--ikea-white);
+    display: flex;
+    align-items: stretch;
+}
+
+.auth-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    min-height: 100vh;
+}
+
+/* ── LEFT PANEL — blue branding ── */
+.auth-brand-panel {
+    background: var(--ikea-blue);
+    color: white;
+    padding: var(--space-2xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-brand-logo .logo-box {
+    font-size: 32px;
+}
+
+.auth-brand-copy {
+    z-index: 2;
+}
+
+.auth-brand-copy h2 {
+    font-size: clamp(32px, 3vw, 52px);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -1.5px;
+    margin-bottom: var(--space-sm);
+}
+
+.auth-brand-copy h2 span {
+    color: var(--ikea-yellow);
+}
+
+.auth-brand-copy p {
+    font-size: var(--text-md);
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1.6;
+    max-width: 360px;
+}
+
+/* Miniature room scene reused from hero */
+.auth-room-scene {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 55%;
+}
+
+.auth-room-scene .wall {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 55%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.07), rgba(255,255,255,0.03));
+}
+
+.auth-room-scene .floor {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 48%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.15));
+}
+
+.auth-room-scene .sofa {
+    position: absolute;
+    bottom: 44%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 180px;
+}
+
+.auth-room-scene .plant {
+    position: absolute;
+    bottom: 46%;
+    right: 15%;
+}
+
+.auth-room-scene .lamp {
+    position: absolute;
+    top: 5%;
+    right: 22%;
+}
+
+/* ── RIGHT PANEL — form ── */
+.auth-form-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2xl) var(--space-lg);
+    background: var(--ikea-white);
+}
+
+.auth-form-box {
+    width: 100%;
+    max-width: 440px;
+}
+
+/* Back to homepage link */
+.auth-back-link {
+    margin-top: var(--space-lg);
+    font-size: var(--text-sm);
+}
+
+.auth-back-link a {
+    color: var(--ikea-blue);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color var(--transition-fast);
+}
+
+.auth-back-link a:hover { color: #004f94; }
+
+/* ── FORM HEADER ── */
+.auth-form-header {
+    margin-bottom: var(--space-lg);
+}
+
+.auth-form-title {
+    font-size: var(--text-3xl);
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    color: var(--ikea-dark);
+    margin-bottom: 4px;
+}
+
+.auth-form-subtitle {
+    font-size: var(--text-base);
+    color: var(--ikea-gray);
+}
+
+/* Session status (password reset etc.) */
+.auth-session-status {
+    background: #e6f4ec;
+    color: #008641;
+    border-radius: 4px;
+    padding: 10px var(--space-sm);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    margin-bottom: var(--space-md);
+}
+
+/* ── FORM FIELDS ── */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.auth-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Label row (used in login to put forgot password inline) */
+.auth-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.auth-forgot-link {
+    font-size: var(--text-sm);
+    color: var(--ikea-blue);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color var(--transition-fast);
+}
+
+.auth-forgot-link:hover { color: #004f94; }
+
+/* Override Breeze's label component */
+.auth-label,
+label.auth-label {
+    font-size: var(--text-sm) !important;
+    font-weight: 700 !important;
+    color: var(--ikea-dark) !important;
+    font-family: 'Noto Sans', sans-serif !important;
+}
+
+/* Override Breeze's text-input component */
+.auth-input,
+input.auth-input {
+    width: 100% !important;
+    height: 48px !important;
+    padding: 0 var(--space-sm) !important;
+    border: 1.5px solid var(--ikea-border) !important;
+    border-radius: 4px !important;
+    font-size: var(--text-base) !important;
+    font-family: 'Noto Sans', sans-serif !important;
+    background: white !important;
+    color: var(--ikea-dark) !important;
+    transition: border-color var(--transition-fast) !important;
+    box-shadow: none !important;
+}
+
+.auth-input:focus,
+input.auth-input:focus {
+    outline: none !important;
+    border-color: var(--ikea-blue) !important;
+    box-shadow: 0 0 0 3px rgba(0, 88, 163, 0.12) !important;
+}
+
+.auth-input::placeholder { color: var(--ikea-gray) !important; }
+
+/* Validation error */
+.auth-error,
+.auth-error p {
+    font-size: var(--text-sm) !important;
+    color: #CC0008 !important;
+    font-weight: 600 !important;
+}
+
+/* Remember me checkbox */
+.auth-remember { margin-top: 4px; }
+
+.auth-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--text-base);
+    color: var(--ikea-dark);
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.auth-checkbox {
+    width: 18px !important;
+    height: 18px !important;
+    border: 1.5px solid var(--ikea-border) !important;
+    border-radius: 3px !important;
+    accent-color: var(--ikea-blue);
+    cursor: pointer;
+}
+
+/* ── SUBMIT BUTTON ── */
+.auth-submit-btn {
+    width: 100%;
+    height: 52px;
+    background: var(--ikea-yellow);
+    color: var(--ikea-dark);
+    border: none;
+    border-radius: 40px;
+    font-size: var(--text-md);
+    font-weight: 700;
+    font-family: 'Noto Sans', sans-serif;
+    cursor: pointer;
+    transition: background var(--transition-fast), transform var(--transition-fast);
+    margin-top: var(--space-xs);
+}
+
+.auth-submit-btn:hover {
+    background: #f0cc00;
+    transform: translateY(-1px);
+}
+
+.auth-submit-btn:active { background: #e0bc00; }
+
+/* Switch link (login → register / register → login) */
+.auth-switch-link {
+    text-align: center;
+    font-size: var(--text-sm);
+    color: var(--ikea-gray);
+    margin-top: var(--space-xs);
+}
+
+.auth-switch-link a {
+    color: var(--ikea-blue);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color var(--transition-fast);
+}
+
+.auth-switch-link a:hover { color: #004f94; }
+
+
+/* ── AUTH RESPONSIVE ── */
+@media (max-width: 900px) {
+    .auth-wrapper        { grid-template-columns: 1fr; }
+    .auth-brand-panel    { display: none; }
+    .auth-form-panel     { padding: var(--space-xl) var(--space-md); justify-content: flex-start; padding-top: 60px; }
+    .auth-mobile-logo    { display: block; }
+}
+
+@media (max-width: 560px) {
+    .auth-form-panel     { padding: var(--space-lg) var(--space-sm); }
+    .auth-form-title     { font-size: var(--text-2xl); }
+}
