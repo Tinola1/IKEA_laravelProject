@@ -35,7 +35,7 @@
                     @auth
                         <a href="{{ url('/dashboard') }}">Dashboard</a>
                         <a href="{{ route('shop.index') }}">Shop</a>
-                        <a href="{{ route('cart.index') }}" aria-label="Shopping cart">🛒 Cart</a>
+                        <a href="{{ route('cart.index') }}" aria-label="Shopping cart">Cart</a>
                     @else
                         <a href="{{ route('login') }}">Log in</a>
                         @if (Route::has('register'))
@@ -158,7 +158,7 @@
             {{-- ── PROMO BANNERS ── --}}
             <section aria-label="Promotions">
                 <div class="promo-grid">
-                    <a href="{{ route('shop.index') }}?category=sofas-armchairs" class="promo-card blue">
+                    <a href="{{ route('shop.index') }}?search=&category=1" class="promo-card blue">
                         <div class="promo-bg-shape" aria-hidden="true"></div>
                         <div class="label">Limited Time Offer</div>
                         <h3>Up to 30% off<br>Living Room<br>Essentials</h3>

@@ -17,7 +17,7 @@
             <a href="{{ route('cart.index') }}"
                class="{{ request()->routeIs('cart.*') ? 'ikea-nav-active' : '' }}"
                aria-label="Shopping cart">
-                🛒 Cart
+                Cart
                 @php $cartCount = \App\Models\Cart::where('user_id', auth()->id())->sum('quantity'); @endphp
                 @if($cartCount > 0)
                     <span class="ikea-cart-badge">{{ $cartCount }}</span>
@@ -90,66 +90,5 @@
             @endif
         @endauth
     </nav>
-
-    {{-- Mobile hamburger --}}
-    <button
-        class="ikea-nav-toggle"
-        @click="mobileOpen = !mobileOpen"
-        :aria-expanded="mobileOpen"
-        aria-controls="ikea-mobile-nav"
-        aria-label="Toggle navigation"
-        :class="{ 'ikea-nav-toggle--open': mobileOpen }"
-    >
-        <span></span>
-        <span></span>
-        <span></span>
-    </button>
-
-    {{-- Mobile nav panel --}}
-    <div
-        id="ikea-mobile-nav"
-        class="ikea-mobile-nav"
-        x-show="mobileOpen"
-        x-transition:enter="transition ease-out duration-150"
-        x-transition:enter-start="opacity-0 -translate-y-2"
-        x-transition:enter-end="opacity-100 translate-y-0"
-        x-transition:leave="transition ease-in duration-100"
-        x-transition:leave-start="opacity-100 translate-y-0"
-        x-transition:leave-end="opacity-0 -translate-y-2"
-        @click.outside="mobileOpen = false"
-    >
-        <a href="{{ route('shop.index') }}" class="ikea-mobile-nav-item">Shop</a>
-
-        @auth
-            <a href="{{ route('cart.index') }}" class="ikea-mobile-nav-item">
-                🛒 Cart
-                @if($cartCount > 0)
-                    <span class="ikea-cart-badge">{{ $cartCount }}</span>
-                @endif
-            </a>
-            <a href="{{ route('orders.index') }}" class="ikea-mobile-nav-item">My Orders</a>
-            <a href="{{ route('dashboard') }}" class="ikea-mobile-nav-item">Dashboard</a>
-            <a href="{{ route('profile.edit') }}" class="ikea-mobile-nav-item">Profile</a>
-
-            @if(Auth::user()->hasRole('admin'))
-                <div class="ikea-mobile-nav-divider"></div>
-                <a href="{{ route('admin.orders.index') }}" class="ikea-mobile-nav-item">Admin Orders</a>
-                <a href="{{ route('admin.inventory.index') }}" class="ikea-mobile-nav-item">Inventory</a>
-            @endif
-
-            <div class="ikea-mobile-nav-divider"></div>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="ikea-mobile-nav-item ikea-mobile-nav-item--danger">
-                    Log Out
-                </button>
-            </form>
-        @else
-            <a href="{{ route('login') }}" class="ikea-mobile-nav-item">Log in</a>
-            @if (Route::has('register'))
-                <a href="{{ route('register') }}" class="ikea-mobile-nav-item">Create account</a>
-            @endif
-        @endauth
-    </div>
 
 </header>

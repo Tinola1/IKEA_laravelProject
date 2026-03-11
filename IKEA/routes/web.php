@@ -11,6 +11,8 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+
 
 // Before
 Route::get('/', function () {
@@ -25,6 +27,10 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 
 Route::get('/dashboard', function () {
+    // Redirect admins and staff straight to the admin dashboard
+    if (auth()->user()?->hasAnyRole(['admin', 'staff'])) {
+        return redirect()->route('admin.dashboard');
+    }
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -33,6 +39,13 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     // Checkout
+
+    Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+    Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard'); // ← ADD THIS
+    Route::resource('categories', CategoryController::class)->except(['show']);
+    Route::resource('products', ProductController::class)->except(['show']);
+    // ... rest of your admin routes
+});
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
