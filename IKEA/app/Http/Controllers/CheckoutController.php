@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\OrderConfirmation;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class CheckoutController extends Controller
 {
@@ -49,8 +51,9 @@ class CheckoutController extends Controller
 
         $total = $cartItems->sum(fn($item) => $item->product->price * $item->quantity);
 
-        DB::transaction(function () use ($request, $cartItems, $total) {
-            // Create the order
+        $order = null;
+
+        DB::transaction(function () use ($request, $cartItems, $total, &$order) {
             $order = Order::create([
                 'user_id'        => Auth::id(),
                 'status'         => 'pending',
@@ -66,7 +69,6 @@ class CheckoutController extends Controller
                 'notes'          => $request->notes,
             ]);
 
-            // Create order items and reduce stock
             foreach ($cartItems as $item) {
                 OrderItem::create([
                     'order_id'   => $order->id,
@@ -75,20 +77,24 @@ class CheckoutController extends Controller
                     'price'      => $item->product->price,
                 ]);
 
-                // Reduce stock
                 $item->product->decrement('stock', $item->quantity);
 
-                // Mark unavailable if out of stock
                 if ($item->product->stock <= 0) {
                     $item->product->update(['is_available' => false]);
                 }
             }
 
-            // Clear the cart
             Cart::where('user_id', Auth::id())->delete();
 
             session(['last_order_id' => $order->id]);
         });
+
+        // ── Send order confirmation email ──────────────────────────────
+        // Load the items relationship so the email view has access to them
+        if ($order) {
+            $order->load('items.product');
+            Mail::to(Auth::user()->email)->send(new OrderConfirmation($order));
+        }
 
         return redirect()->route('checkout.success');
     }
