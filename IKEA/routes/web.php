@@ -12,7 +12,8 @@ use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\AuditLogController as AdminAuditLogController;
 
 // Before
 Route::get('/', function () {
@@ -44,6 +45,11 @@ Route::middleware('auth')->group(function () {
     Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard'); // ← ADD THIS
     Route::resource('categories', CategoryController::class)->except(['show']);
     Route::resource('products', ProductController::class)->except(['show']);
+    
+    Route::get('users',                  [AdminUserController::class, 'index'])->name('users.index');
+    Route::patch('users/{user}/role',    [AdminUserController::class, 'updateRole'])->name('users.role');
+    Route::delete('users/{user}',        [AdminUserController::class, 'destroy'])->name('users.destroy');
+    Route::get('audit-logs',             [AdminAuditLogController::class, 'index'])->name('audit-logs.index');
     // ... rest of your admin routes
 });
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
