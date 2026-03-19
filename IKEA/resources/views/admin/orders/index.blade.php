@@ -3,7 +3,7 @@
         <div class="admin-page-header">
             <div>
                 <h2 class="admin-page-title">Order Management</h2>
-                <p class="admin-page-subtitle">{{ $orders->total() }} total orders</p>
+                <p class="admin-page-subtitle">{{ $orders->count() }} total orders</p>
             </div>
         </div>
     </x-slot>
@@ -29,6 +29,41 @@
                     <span class="status-label">{{ ucfirst($status) }}</span>
                 </div>
             @endforeach
+        </div>
+
+        {{-- ── FILTER BAR ───────────────────────────────────────── --}}
+        <div class="admin-card" style="padding: 14px var(--space-md);">
+            <div class="orders-filter-bar">
+                <div class="filter-group">
+                    <label class="filter-label">Status</label>
+                    <select id="statusFilter" class="admin-select" onchange="filterOrders()">
+                        <option value="">All Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Payment</label>
+                    <select id="paymentFilter" class="admin-select" onchange="filterOrders()">
+                        <option value="">All</option>
+                        <option value="unpaid">Unpaid</option>
+                        <option value="paid">Paid</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Date From</label>
+                    <input type="date" id="dateFrom" class="admin-date-input" onchange="filterOrders()">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Date To</label>
+                    <input type="date" id="dateTo" class="admin-date-input" onchange="filterOrders()">
+                </div>
+                <div class="filter-group" style="align-self:flex-end;">
+                    <button onclick="clearFilters()" class="btn-clear-filters">Clear</button>
+                </div>
+            </div>
         </div>
 
         {{-- ── TABLE ───────────────────────────────────────────── --}}
@@ -84,13 +119,65 @@
         </div>
     </div>
 
+    <style>
+        .orders-filter-bar {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .filter-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--ikea-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .admin-date-input {
+            height: 36px;
+            padding: 0 10px;
+            border: 1px solid var(--ikea-border);
+            border-radius: 6px;
+            font-size: var(--text-sm);
+            font-family: 'Noto Sans', sans-serif;
+            color: var(--ikea-dark);
+            background: white;
+            cursor: pointer;
+        }
+        .admin-date-input:focus { outline: none; border-color: var(--ikea-blue); }
+        .btn-clear-filters {
+            height: 36px;
+            padding: 0 16px;
+            background: transparent;
+            border: 1px solid var(--ikea-border);
+            border-radius: 6px;
+            font-size: var(--text-sm);
+            font-weight: 700;
+            font-family: 'Noto Sans', sans-serif;
+            color: var(--ikea-gray);
+            cursor: pointer;
+            transition: all .15s;
+        }
+        .btn-clear-filters:hover {
+            background: var(--ikea-light);
+            border-color: var(--ikea-gray);
+        }
+    </style>
+
     @push('scripts')
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/jquery.dataTables.min.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
         <script>
+            var table;
+
             $(document).ready(function () {
-                $('#ordersTable').DataTable({
+                table = $('#ordersTable').DataTable({
                     pageLength: 15,
                     order: [[0, 'desc']],
                     columnDefs: [{ orderable: false, targets: [6] }],
@@ -101,6 +188,42 @@
                     },
                 });
             });
+
+            $.fn.dataTable.ext.search.push(function (settings, data) {
+                if (settings.nTable.id !== 'ordersTable') return true;
+
+                var statusFilter  = document.getElementById('statusFilter').value.toLowerCase();
+                var paymentFilter = document.getElementById('paymentFilter').value.toLowerCase();
+                var dateFrom      = document.getElementById('dateFrom').value;
+                var dateTo        = document.getElementById('dateTo').value;
+
+                var rowStatus  = data[5].trim().toLowerCase();
+                var rowPayment = data[4].trim().toLowerCase();
+                var rowDate    = data[2];
+
+                if (statusFilter  && rowStatus  !== statusFilter)  return false;
+                if (paymentFilter && rowPayment !== paymentFilter)  return false;
+
+                if (dateFrom || dateTo) {
+                    var d = new Date(rowDate);
+                    if (dateFrom && d < new Date(dateFrom)) return false;
+                    if (dateTo   && d > new Date(dateTo))   return false;
+                }
+
+                return true;
+            });
+
+            function filterOrders() {
+                if (table) table.draw();
+            }
+
+            function clearFilters() {
+                document.getElementById('statusFilter').value  = '';
+                document.getElementById('paymentFilter').value = '';
+                document.getElementById('dateFrom').value      = '';
+                document.getElementById('dateTo').value        = '';
+                if (table) table.draw();
+            }
         </script>
     @endpush
 

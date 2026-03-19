@@ -10,14 +10,12 @@ class InventoryController extends Controller
 {
     public function index()
     {
-        $products = Product::with('category')
-            ->orderBy('stock', 'asc')
-            ->paginate(15);
-
-        $lowStock = Product::where('stock', '<=', 5)->where('stock', '>', 0)->count();
+        $products   = Product::with('category')->orderBy('stock', 'asc')->get();
+        $categories = \App\Models\Category::orderBy('name')->get();
+        $lowStock   = Product::where('stock', '<=', 5)->where('stock', '>', 0)->count();
         $outOfStock = Product::where('stock', 0)->count();
 
-        return view('admin.inventory.index', compact('products', 'lowStock', 'outOfStock'));
+        return view('admin.inventory.index', compact('products', 'categories', 'lowStock', 'outOfStock'));
     }
 
     public function update(Request $request, Product $product)
