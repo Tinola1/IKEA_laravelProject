@@ -82,3 +82,23 @@ Route::get('/shop', [ShopProductController::class, 'index'])->name('shop.index')
 Route::get('/shop/{product}', [ShopProductController::class, 'show'])->name('shop.show');
 
 require __DIR__.'/auth.php';
+
+Route::get('/test-receipt/{order}', function (\App\Models\Order $order) {
+    $order->load('items.product', 'user');
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('emails.receipt', compact('order'));
+    return $pdf->stream('receipt.pdf');
+})->middleware('auth');
+
+Route::get('/orders/{order}/receipt', function (\App\Models\Order $order) {
+    // Only allow the order owner
+    if ($order->user_id !== auth()->id()) abort(403);
+
+    $order->load('items.product', 'user');
+
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('emails.receipt', compact('order'))
+        ->setPaper('a4', 'portrait');
+
+    $filename = 'IKEA-Receipt-' . str_pad($order->id, 6, '0', STR_PAD_LEFT) . '.pdf';
+
+    return $pdf->download($filename);
+})->name('orders.receipt');

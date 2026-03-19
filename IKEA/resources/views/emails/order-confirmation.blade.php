@@ -267,12 +267,15 @@
             @endif
         </div>
 
-        {{-- CTA --}}
-        <div class="cta-wrap">
-            <a href="{{ url('/orders/' . $order->id) }}" class="cta-btn">
-                Track My Order →
-            </a>
-        </div>
+       {{-- CTA --}}
+<div class="cta-wrap">
+    <a href="{{ url('/orders/' . $order->id . '/receipt') }}" class="cta-btn" style="margin-bottom:10px;display:block;">
+        📄 Download Receipt PDF
+    </a>
+    <a href="{{ url('/orders/' . $order->id) }}" class="cta-btn" style="background:#0058A3;color:white;">
+        Track My Order →
+    </a>
+</div>
 
         <p style="font-size:13px;color:#767676;text-align:center;line-height:1.6;">
             Questions about your order? Reply to this email or visit our

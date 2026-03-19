@@ -15,18 +15,21 @@ class DashboardController extends Controller
     {
         $year = (int) request('year', now()->year);
 
+        // ── DATE RANGE (for the date-picker bar chart) ──────────────────
+        $dateFrom = request('date_from')
+            ? Carbon::parse(request('date_from'))->startOfDay()
+            : now()->subDays(29)->startOfDay();
+
+        $dateTo = request('date_to')
+            ? Carbon::parse(request('date_to'))->endOfDay()
+            : now()->endOfDay();
+
         // ── KPI CARDS ──────────────────────────────────────────────────
-        $totalRevenue = Order::whereNotIn('status', ['cancelled'])
-            ->sum('total');
-
-        $totalOrders = Order::count();
-
+        $totalRevenue = Order::whereNotIn('status', ['cancelled'])->sum('total');
+        $totalOrders  = Order::count();
         $totalProducts = Product::where('is_available', true)->count();
-
-        // Use DB query for role check to avoid Spatie dependency issues
         $totalCustomers = User::whereHas('roles', fn($q) => $q->where('name', 'customer'))->count();
 
-        // Month-over-month revenue comparison
         $thisMonthRevenue = Order::whereNotIn('status', ['cancelled'])
             ->whereYear('created_at', now()->year)
             ->whereMonth('created_at', now()->month)
@@ -41,16 +44,13 @@ class DashboardController extends Controller
             ? round((($thisMonthRevenue - $lastMonthRevenue) / $lastMonthRevenue) * 100, 1)
             : ($thisMonthRevenue > 0 ? 100 : 0);
 
-        // Orders this month vs last month
         $thisMonthOrders = Order::whereYear('created_at', now()->year)
-            ->whereMonth('created_at', now()->month)
-            ->count();
+            ->whereMonth('created_at', now()->month)->count();
 
         $lastMonthOrders = Order::whereYear('created_at', now()->subMonth()->year)
-            ->whereMonth('created_at', now()->subMonth()->month)
-            ->count();
+            ->whereMonth('created_at', now()->subMonth()->month)->count();
 
-        // ── MONTHLY CHART DATA (all products combined) ──────────────────
+        // ── YEARLY CHART DATA ───────────────────────────────────────────
         $monthlyData = Order::whereNotIn('status', ['cancelled'])
             ->whereYear('created_at', $year)
             ->select(
@@ -58,22 +58,16 @@ class DashboardController extends Controller
                 DB::raw('SUM(total) as revenue'),
                 DB::raw('COUNT(*) as orders')
             )
-            ->groupBy('month')
-            ->orderBy('month')
-            ->get()
-            ->keyBy('month');
+            ->groupBy('month')->orderBy('month')->get()->keyBy('month');
 
-        $chartLabels  = [];
-        $chartRevenue = [];
-        $chartOrders  = [];
-
+        $chartLabels = $chartRevenue = $chartOrders = [];
         for ($m = 1; $m <= 12; $m++) {
             $chartLabels[]  = Carbon::create()->month($m)->format('M');
             $chartRevenue[] = $monthlyData->has($m) ? (float) $monthlyData[$m]->revenue : 0;
             $chartOrders[]  = $monthlyData->has($m) ? (int)   $monthlyData[$m]->orders  : 0;
         }
 
-        // ── PER-PRODUCT MONTHLY DATA ────────────────────────────────────
+        // ── PER-PRODUCT MONTHLY DATA (for individual product filter) ────
         $productMonthlyRaw = DB::table('order_items')
             ->join('products', 'order_items.product_id', '=', 'products.id')
             ->join('orders',   'order_items.order_id',   '=', 'orders.id')
@@ -86,59 +80,114 @@ class DashboardController extends Controller
                 DB::raw('SUM(order_items.quantity * order_items.price) as revenue')
             )
             ->groupBy('products.id', 'products.name', 'month')
-            ->orderBy('products.name')
-            ->orderBy('month')
-            ->get();
+            ->orderBy('products.name')->orderBy('month')->get();
 
-        // Build structure: { productId: { name, months: [0..0, revenue..] } }
         $productChartData = [];
         foreach ($productMonthlyRaw as $row) {
             $pid = $row->product_id;
             if (!isset($productChartData[$pid])) {
-                $productChartData[$pid] = [
-                    'name'   => $row->product_name,
-                    'months' => array_fill(1, 12, 0),
-                ];
+                $productChartData[$pid] = ['name' => $row->product_name, 'months' => array_fill(1, 12, 0)];
             }
             $productChartData[$pid]['months'][$row->month] = (float) $row->revenue;
         }
 
-        // Flatten months to 0-indexed array for Chart.js
         $productChartJson = [];
         foreach ($productChartData as $pid => $data) {
-            $productChartJson[] = [
-                'id'     => $pid,
-                'name'   => $data['name'],
-                'data'   => array_values($data['months']),
-            ];
+            $productChartJson[] = ['id' => $pid, 'name' => $data['name'], 'data' => array_values($data['months'])];
         }
 
-        // All products list for the dropdown filter
         $allProducts = Product::orderBy('name')->get(['id', 'name']);
+
+        // ── DATE RANGE CHART DATA ───────────────────────────────────────
+        // Group by day if range ≤ 31 days, by week if ≤ 90, by month otherwise
+        $diffDays = $dateFrom->diffInDays($dateTo);
+
+        if ($diffDays <= 31) {
+            $groupFormat  = '%Y-%m-%d';
+            $labelFormat  = 'M d';
+            $carbonFormat = 'Y-m-d';
+        } elseif ($diffDays <= 90) {
+            $groupFormat  = '%x-%v'; // ISO year-week
+            $labelFormat  = null;    // handled below
+            $carbonFormat = null;
+        } else {
+            $groupFormat  = '%Y-%m';
+            $labelFormat  = 'M Y';
+            $carbonFormat = 'Y-m';
+        }
+
+        $rangeRaw = Order::whereNotIn('status', ['cancelled'])
+            ->whereBetween('created_at', [$dateFrom, $dateTo])
+            ->select(
+                DB::raw("DATE_FORMAT(created_at, '{$groupFormat}') as period"),
+                DB::raw('SUM(total) as revenue'),
+                DB::raw('COUNT(*) as orders')
+            )
+            ->groupBy('period')->orderBy('period')->get();
+
+        $rangeLabels  = [];
+        $rangeRevenue = [];
+        $rangeOrders  = [];
+
+        foreach ($rangeRaw as $row) {
+            if ($diffDays <= 31) {
+                $rangeLabels[] = Carbon::parse($row->period)->format($labelFormat);
+            } elseif ($diffDays <= 90) {
+                $rangeLabels[] = 'Wk ' . explode('-', $row->period)[1];
+            } else {
+                $rangeLabels[] = Carbon::createFromFormat('Y-m', $row->period)->format($labelFormat);
+            }
+            $rangeRevenue[] = (float) $row->revenue;
+            $rangeOrders[]  = (int)   $row->orders;
+        }
+
+        // ── PIE CHART: Revenue per product ─────────────────────────────
+        $pieData = DB::table('order_items')
+            ->join('products', 'order_items.product_id', '=', 'products.id')
+            ->join('orders',   'order_items.order_id',   '=', 'orders.id')
+            ->whereNotIn('orders.status', ['cancelled'])
+            ->select(
+                'products.name',
+                DB::raw('SUM(order_items.quantity * order_items.price) as revenue')
+            )
+            ->groupBy('products.id', 'products.name')
+            ->orderByDesc('revenue')
+            ->get();
+
+        $totalPieRevenue = $pieData->sum('revenue') ?: 1;
+
+        $pieLabels     = [];
+        $pieRevenues   = [];
+        $piePercentages = [];
+
+        // Show top 8 products, group the rest as "Others"
+        $topProducts = $pieData->take(8);
+        $others      = $pieData->skip(8);
+
+        foreach ($topProducts as $row) {
+            $pieLabels[]      = $row->name;
+            $pieRevenues[]    = (float) $row->revenue;
+            $piePercentages[] = round(($row->revenue / $totalPieRevenue) * 100, 1);
+        }
+
+        if ($others->count() > 0) {
+            $othersRevenue    = $others->sum('revenue');
+            $pieLabels[]      = 'Others (' . $others->count() . ' products)';
+            $pieRevenues[]    = (float) $othersRevenue;
+            $piePercentages[] = round(($othersRevenue / $totalPieRevenue) * 100, 1);
+        }
 
         // ── ORDER STATUS BREAKDOWN ──────────────────────────────────────
         $statusBreakdown = Order::select('status', DB::raw('count(*) as total'))
-            ->groupBy('status')
-            ->pluck('total', 'status');
+            ->groupBy('status')->pluck('total', 'status');
 
-        // ── RECENT ORDERS ───────────────────────────────────────────────
-        $recentOrders = Order::with('user')
-            ->latest()
-            ->take(8)
-            ->get();
+        // ── RECENT ORDERS + LOW STOCK ───────────────────────────────────
+        $recentOrders = Order::with('user')->latest()->take(8)->get();
+        $lowStock     = Product::with('category')->where('stock', '<=', 5)->orderBy('stock')->get();
 
-        // ── LOW STOCK ───────────────────────────────────────────────────
-        $lowStock = Product::with('category')
-            ->where('stock', '<=', 5)
-            ->orderBy('stock')
-            ->get();
-
-        // ── AVAILABLE YEARS for year picker ────────────────────────────
+        // ── AVAILABLE YEARS ─────────────────────────────────────────────
         $availableYears = Order::selectRaw('YEAR(created_at) as y')
-            ->groupBy('y')
-            ->orderByDesc('y')
-            ->pluck('y')
-            ->toArray();
+            ->groupBy('y')->orderByDesc('y')->pluck('y')->toArray();
 
         if (empty($availableYears)) {
             $availableYears = [now()->year];
@@ -151,7 +200,12 @@ class DashboardController extends Controller
             'chartLabels', 'chartRevenue', 'chartOrders',
             'productChartJson', 'allProducts',
             'statusBreakdown', 'recentOrders', 'lowStock',
-            'availableYears', 'year'
+            'availableYears', 'year',
+            // Date range chart
+            'rangeLabels', 'rangeRevenue', 'rangeOrders',
+            'dateFrom', 'dateTo',
+            // Pie chart
+            'pieLabels', 'pieRevenues', 'piePercentages'
         ));
     }
 }

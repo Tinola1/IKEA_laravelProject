@@ -8,23 +8,28 @@ use Illuminate\Validation\Rule;
 
 class ProfileUpdateRequest extends FormRequest
 {
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            // Basic info
+            'name'  => ['required', 'string', 'max:255'],
             'email' => [
-                'required',
-                'string',
-                'lowercase',
-                'email',
-                'max:255',
+                'required', 'string', 'lowercase', 'email', 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
+
+            // Avatar
+            'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+
+            // Delivery address
+            'phone'    => ['nullable', 'string', 'max:20'],
+            'address'  => ['nullable', 'string', 'max:500'],
+            'city'     => ['nullable', 'string', 'max:100'],
+            'province' => ['nullable', 'string', 'max:100'],
+            'zip_code' => ['nullable', 'string', 'max:10'],
+
+            // Payment
+            'payment_method' => ['nullable', Rule::in(['cod', 'gcash', 'bank_transfer'])],
         ];
     }
 }

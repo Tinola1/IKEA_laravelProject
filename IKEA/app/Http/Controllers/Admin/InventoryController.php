@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -10,8 +11,8 @@ class InventoryController extends Controller
 {
     public function index()
     {
-        $products   = Product::with('category')->orderBy('stock', 'asc')->get();
-        $categories = \App\Models\Category::orderBy('name')->get();
+        $products   = Product::with('category')->orderBy('stock', 'asc')->paginate(15);
+        $categories = Category::all();
         $lowStock   = Product::where('stock', '<=', 5)->where('stock', '>', 0)->count();
         $outOfStock = Product::where('stock', 0)->count();
 
