@@ -50,7 +50,6 @@ Route::middleware('auth')->group(function () {
     Route::patch('users/{user}/role',    [AdminUserController::class, 'updateRole'])->name('users.role');
     Route::delete('users/{user}',        [AdminUserController::class, 'destroy'])->name('users.destroy');
     Route::get('audit-logs',             [AdminAuditLogController::class, 'index'])->name('audit-logs.index');
-    // ... rest of your admin routes
 });
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
@@ -70,6 +69,7 @@ Route::middleware('auth')->group(function () {
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
     Route::resource('categories', CategoryController::class)->except(['show']);
     Route::resource('products', ProductController::class)->except(['show']);
+    Route::delete('products/{product}/images/{image}', [ProductController::class, 'destroyImage'])->name('products.images.destroy');
     Route::get('orders', [AdminOrderController::class, 'index'])->name('orders.index');
     Route::get('orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
     Route::patch('orders/{order}', [AdminOrderController::class, 'update'])->name('orders.update');

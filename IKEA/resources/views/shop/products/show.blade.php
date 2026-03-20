@@ -22,16 +22,32 @@
 
             {{-- ── IMAGE PANEL ── --}}
             <div class="product-detail-image">
+                {{-- Main image --}}
                 @if($product->image)
-                    <img
-                        src="{{ Storage::url($product->image) }}"
+                    <img src="{{ Storage::url($product->image) }}"
                         alt="{{ $product->name }}"
                         class="product-detail-img"
-                    >
+                        id="mainImage">
                 @else
                     <div class="product-detail-img-placeholder" aria-hidden="true">
                         {{ ['🛋️','🛏️','🪑','🍳','🪞','💡','🪴','🛁'][($product->id - 1) % 8] }}
                     </div>
+                @endif
+
+                {{-- Thumbnail strip --}}
+                @if($product->image && $product->productImages->isNotEmpty())
+                <div class="product-thumbnails">
+                    {{-- Primary image thumb --}}
+                    <img src="{{ Storage::url($product->image) }}"
+                        class="product-thumb active"
+                        onclick="switchImage(this, '{{ Storage::url($product->image) }}')">
+                    {{-- Extra image thumbs --}}
+                    @foreach($product->productImages as $img)
+                        <img src="{{ Storage::url($img->path) }}"
+                            class="product-thumb"
+                            onclick="switchImage(this, '{{ Storage::url($img->path) }}')">
+                    @endforeach
+                </div>
                 @endif
             </div>
 
@@ -102,5 +118,32 @@
             </div>
         </div>
     </div>
+    
+    <style>
+        .product-thumbnails {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        .product-thumb {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 2px solid var(--ikea-border);
+            cursor: pointer;
+            transition: border-color .15s;
+        }
+        .product-thumb:hover { border-color: var(--ikea-blue); }
+        .product-thumb.active { border-color: var(--ikea-blue); }
+    </style>
 
+    <script>
+        function switchImage(thumb, src) {
+            document.getElementById('mainImage').src = src;
+            document.querySelectorAll('.product-thumb').forEach(t => t.classList.remove('active'));
+            thumb.classList.add('active');
+        }
+    </script>
 </x-app-layout>
