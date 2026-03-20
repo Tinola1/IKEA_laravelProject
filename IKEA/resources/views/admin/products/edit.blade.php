@@ -1,8 +1,6 @@
-@php 
-use Illuminate\Support\Facades\Storage; 
-@endphp
-
+@php use Illuminate\Support\Facades\Storage; @endphp
 <x-admin-layout>
+    <x-slot name="title">Edit Product — {{ $product->name }}</x-slot>
     <x-slot name="header">
         <div class="admin-page-header">
             <div>
@@ -145,33 +143,7 @@ use Illuminate\Support\Facades\Storage;
             </form>
         </div>
     </div>
-
-    <style>
-        .extra-images-grid { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-start; }
-        .extra-image-wrap { position: relative; }
-        .extra-image-thumb { width: 72px; height: 72px; object-fit: cover; border-radius: 6px; border: 1px solid var(--ikea-border); display: block; }
-        .extra-image-delete {
-            position: absolute; top: -6px; right: -6px;
-            width: 20px; height: 20px; border-radius: 50%;
-            background: #CC0008; color: white; border: 2px solid white;
-            font-size: 10px; font-weight: 900; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            padding: 0;
-        }
-        .extra-image-add {
-            width: 72px; height: 72px; border-radius: 6px;
-            border: 2px dashed var(--ikea-border);
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; color: var(--ikea-gray);
-            font-size: 28px; font-weight: 300;
-            transition: border-color .15s, color .15s;
-            flex-shrink: 0;
-        }
-        .extra-image-add:hover { border-color: var(--ikea-blue); color: var(--ikea-blue); }
-        .extra-image-input { display: none; }
-        .extra-image-staged { opacity: 0.3; }
-    </style>
-
+    
     <script>
         const stagedIds = [];
         const originalPrimaryUrl = "{{ $product->image ? Storage::url($product->image) : '' }}";

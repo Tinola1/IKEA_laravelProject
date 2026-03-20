@@ -1,4 +1,5 @@
 <x-admin-layout>
+    <x-slot name="title">Order #{{ str_pad($order->id, 6, '0', STR_PAD_LEFT) }}</x-slot>
     <x-slot name="header">
         <div class="admin-page-header">
             <div>

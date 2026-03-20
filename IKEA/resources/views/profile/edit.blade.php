@@ -1,4 +1,5 @@
 <x-app-layout>
+    <x-slot name="title">Profile Settings</x-slot>
     <x-slot name="header">
         <div class="admin-page-header">
             <div>

@@ -1,4 +1,5 @@
 <x-admin-layout>
+    <x-slot name="title">Users</x-slot>
     <x-slot name="header">
         <div class="admin-page-header">
             <div>
@@ -122,22 +123,6 @@
 
         </div>
     </div>
-
-    <style>
-        .user-avatar {
-            width: 34px;
-            height: 34px;
-            background: var(--ikea-blue);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            font-weight: 900;
-            flex-shrink: 0;
-        }
-    </style>
 
     @push('scripts')
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/jquery.dataTables.min.css">

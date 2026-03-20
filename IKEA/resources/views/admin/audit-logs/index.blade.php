@@ -1,4 +1,5 @@
 <x-admin-layout>
+    <x-slot name="title">Audit Logs</x-slot>
     <x-slot name="header">
         <div class="admin-page-header">
             <div>
@@ -148,54 +149,6 @@
         </div>
 
     </div>
-
-    <style>
-        .audit-filters {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: var(--space-sm);
-            align-items: end;
-        }
-        .audit-filter-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .user-avatar {
-            width: 34px;
-            height: 34px;
-            background: var(--ikea-blue);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            font-weight: 900;
-            flex-shrink: 0;
-        }
-        .audit-coming-soon {
-            display: flex;
-            align-items: flex-start;
-            gap: var(--space-sm);
-            background: #fff8e1;
-            border: 1.5px solid #ffe082;
-            border-radius: 8px;
-            padding: var(--space-md);
-            font-size: var(--text-sm);
-            color: #5d4037;
-            line-height: 1.6;
-        }
-        .audit-coming-soon span { font-size: 24px; flex-shrink: 0; }
-        .audit-coming-soon code {
-            background: rgba(0,0,0,0.08);
-            padding: 1px 6px;
-            border-radius: 3px;
-            font-size: 12px;
-        }
-        @media (max-width: 1100px) { .audit-filters { grid-template-columns: repeat(3, 1fr); } }
-        @media (max-width: 700px)  { .audit-filters { grid-template-columns: 1fr 1fr; } }
-    </style>
 
     @push('scripts')
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/jquery.dataTables.min.css">

@@ -1,5 +1,6 @@
 @php use Illuminate\Support\Facades\Storage; @endphp
 <x-admin-layout>
+    <x-slot name="title">Inventory</x-slot>
     <x-slot name="header">
         <div class="admin-page-header">
             <div>
@@ -114,8 +115,8 @@
                         </td>
                         <td class="table-product-name">{{ $product->name }}</td>
                         <td class="table-category">{{ $product->category->name }}</td>
-                        <td>₱{{ number_format($product->price, 2) }}</td>
-                        <td data-stock="{{ $product->stock }}">
+                        <td data-sort="{{ $product->price }}">₱{{ number_format($product->price, 2) }}</td>
+                        <td data-stock="{{ $product->stock }}" data-order="{{ $product->stock }}">
                             @if($product->stock == 0)
                                 <span style="font-weight:700;color:#CC0008;">0 — Out of Stock</span>
                             @elseif($product->stock <= 5)
@@ -151,19 +152,6 @@
 
     </div>
 
-    <style>
-        .inline-form { display:flex; align-items:center; gap:8px; }
-        .stock-input {
-            width: 72px;
-            border: 1px solid var(--ikea-border);
-            border-radius: 6px;
-            padding: 5px 8px;
-            text-align: center;
-            font-size: 13px;
-            font-family: 'Noto Sans', sans-serif;
-        }
-    </style>
-
     @push('scripts')
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/jquery.dataTables.min.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -173,14 +161,14 @@
 
             $(document).ready(function () {
                 table = $('#inventoryTable').DataTable({
-                    pageLength: 15,
-                    stateSave: true,
-                    lengthMenu: [[15, 25, 50, -1], [15, 25, 50, 'All']],
-                    columnDefs: [
-                        { orderable: false, targets: [1, 7] },
-                        { type: 'num', targets: [0, 4] },
-                    ],
-                    order: [[5, 'asc']],
+                        pageLength: 15,
+                        lengthMenu: [[15, 25, 50, -1], [15, 25, 50, 'All']],
+                        columnDefs: [
+                            { orderable: false, targets: [1, 7] },
+                            { type: 'num', targets: [0, 4] },
+                            { orderData: 5, targets: 5 },
+                        ],
+                        order: [[5, 'asc']],
                     language: {
                         search: 'Search products:',
                         lengthMenu: 'Show _MENU_ products',
@@ -200,7 +188,8 @@
                 var rowCategory     = data[3].trim().toLowerCase();
                 var rowAvailability = data[6].trim().toLowerCase();
 
-                var stockCell = table.row(dataIndex).node().querySelector('td[data-stock]');
+                var rowNode = settings.aoData[dataIndex].nTr;
+                var stockCell = rowNode.querySelector('td[data-stock]');
                 var rawStock  = stockCell ? parseInt(stockCell.getAttribute('data-stock')) : 0;
 
                 if (categoryFilter && rowCategory !== categoryFilter) return false;

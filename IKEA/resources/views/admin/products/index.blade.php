@@ -1,5 +1,6 @@
 @php use Illuminate\Support\Facades\Storage; @endphp
 <x-admin-layout>
+    <x-slot name="title">Products</x-slot>
     <x-slot name="header">
         <div class="admin-page-header">
             <div>
@@ -123,7 +124,7 @@
                         <th>Category</th>
                         <th>Price</th>
                         <th>Stock</th>
-                        <th>Status</th>
+                        <th>Available</th>
                         <th>Actions</th>
                     </tr>
                 </thead>

@@ -1,6 +1,6 @@
 @php use Illuminate\Support\Facades\Storage; @endphp
-
 <x-app-layout>
+    <x-slot name="title">My Cart</x-slot>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">My Cart</h2>
     </x-slot>

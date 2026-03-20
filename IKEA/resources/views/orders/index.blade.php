@@ -1,4 +1,5 @@
 <x-app-layout>
+    <x-slot name="title">My Orders</x-slot>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">My Orders</h2>
     </x-slot>
@@ -57,7 +58,6 @@
                             @endforeach
                         </tbody>
                     </table>
-                    <div class="p-4">{{ $orders->links() }}</div>
                 </div>
             @endif
         </div>

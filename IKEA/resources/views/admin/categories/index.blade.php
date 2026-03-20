@@ -1,4 +1,5 @@
 <x-admin-layout>
+    <x-slot name="title">Categories</x-slot>
     <x-slot name="header">
         <div class="admin-page-header">
             <div>

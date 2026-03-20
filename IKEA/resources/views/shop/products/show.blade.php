@@ -1,6 +1,6 @@
 @php use Illuminate\Support\Facades\Storage; @endphp
-
 <x-app-layout>
+    <x-slot name="title">{{ $product->name }}</x-slot>
     <x-slot name="header">
         <div class="shop-page-header">
             <div>
