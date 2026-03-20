@@ -1,73 +1,89 @@
-<x-app-layout>
+<x-admin-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Products</h2>
+        <div class="admin-page-header">
+            <div>
+                <h2 class="admin-page-title">Add Product</h2>
+                <p class="admin-page-subtitle">Create a new product listing.</p>
+            </div>
+            <a href="{{ route('admin.products.index') }}" class="admin-btn-secondary">← Back to Products</a>
+        </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+    <div class="admin-content">
+        <div class="admin-card" style="padding:var(--space-md); max-width:720px;">
+            <form method="POST" action="{{ route('admin.products.store') }}" enctype="multipart/form-data">
+                @csrf
 
-                @if(session('success'))
-                    <div class="mb-4 p-4 bg-green-100 text-green-800 rounded">{{ session('success') }}</div>
-                @endif
-
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold">All Products</h3>
-                    <a href="{{ route('admin.products.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">+ Add Product</a>
+                <div class="form-group">
+                    <label class="form-label">Category <span class="required">*</span></label>
+                    <select name="category_id" class="form-input">
+                        <option value="">-- Select Category --</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('category_id')<p class="form-error">{{ $message }}</p>@enderror
                 </div>
 
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="border-b">
-                            <th class="py-2">#</th>
-                            <th class="py-2">Image</th>
-                            <th class="py-2">Name</th>
-                            <th class="py-2">Category</th>
-                            <th class="py-2">Price</th>
-                            <th class="py-2">Stock</th>
-                            <th class="py-2">Available</th>
-                            <th class="py-2">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($products as $product)
-                        <tr class="border-b">
-                            <td class="py-2">{{ $loop->iteration }}</td>
-                            <td class="py-2">
-                                @if($product->image)
-                                    <img src="{{ Storage::url($product->image) }}" class="w-12 h-12 object-cover rounded">
-                                @else
-                                    <span class="text-gray-400">No image</span>
-                                @endif
-                            </td>
-                            <td class="py-2">{{ $product->name }}</td>
-                            <td class="py-2">{{ $product->category->name }}</td>
-                            <td class="py-2">₱{{ number_format($product->price, 2) }}</td>
-                            <td class="py-2">{{ $product->stock }}</td>
-                            <td class="py-2">
-                                @if($product->is_available)
-                                    <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">Yes</span>
-                                @else
-                                    <span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">No</span>
-                                @endif
-                            </td>
-                            <td class="py-2 flex gap-2">
-                                <a href="{{ route('admin.products.edit', $product) }}" class="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500">Edit</a>
-                                <form action="{{ route('admin.products.destroy', $product) }}" method="POST" onsubmit="return confirm('Are you sure?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr><td colspan="8" class="py-4 text-center text-gray-500">No products found.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                <div class="form-group">
+                    <label class="form-label">Product Name <span class="required">*</span></label>
+                    <input type="text" name="name" value="{{ old('name') }}" class="form-input" placeholder="e.g. KALLAX Shelf Unit">
+                    @error('name')<p class="form-error">{{ $message }}</p>@enderror
+                </div>
 
-                <div class="mt-4">{{ $products->links() }}</div>
-            </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" rows="3" class="form-input" placeholder="Brief product description...">{{ old('description') }}</textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Price (₱) <span class="required">*</span></label>
+                        <input type="number" name="price" value="{{ old('price') }}" step="0.01" min="0" class="form-input" placeholder="0.00">
+                        @error('price')<p class="form-error">{{ $message }}</p>@enderror
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Stock <span class="required">*</span></label>
+                        <input type="number" name="stock" value="{{ old('stock') }}" min="0" class="form-input" placeholder="0">
+                        @error('stock')<p class="form-error">{{ $message }}</p>@enderror
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Primary Image</label>
+                    <input type="file" name="image" accept="image/*" class="form-file" onchange="previewImage(this)">
+                    <div id="imagePreview" style="display:none;margin-top:8px;">
+                        <img id="previewImg" src="" style="width:80px;height:80px;object-fit:cover;border-radius:6px;border:1px solid var(--ikea-border);">
+                    </div>
+                    @error('image')<p class="form-error">{{ $message }}</p>@enderror
+                </div>
+
+                <div class="form-checkbox">
+                    <input type="checkbox" name="is_available" value="1" id="is_available" {{ old('is_available', true) ? 'checked' : '' }}>
+                    <label for="is_available" class="form-label">Available for purchase</label>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="admin-btn-primary">Save Product</button>
+                    <a href="{{ route('admin.products.index') }}" class="admin-btn-ghost">Cancel</a>
+                </div>
+            </form>
         </div>
     </div>
-</x-app-layout>
+
+    <script>
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    document.getElementById('previewImg').src = e.target.result;
+                    document.getElementById('imagePreview').style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+
+</x-admin-layout>

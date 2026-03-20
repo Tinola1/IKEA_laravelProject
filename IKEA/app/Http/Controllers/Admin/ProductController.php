@@ -13,7 +13,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with('category')->latest()->paginate(10);
+        $products = Product::with('category')->latest()->get();
         return view('admin.products.index', compact('products'));
     }
 
@@ -26,12 +26,12 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'name' => 'required|string|max:255|unique:products',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'category_id'  => 'required|exists:categories,id',
+            'name'         => 'required|string|max:255|unique:products',
+            'description'  => 'nullable|string',
+            'price'        => 'required|numeric|min:0',
+            'stock'        => 'required|integer|min:0',
+            'image'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'is_available' => 'boolean',
         ]);
 
@@ -41,13 +41,13 @@ class ProductController extends Controller
         }
 
         Product::create([
-            'category_id' => $request->category_id,
-            'name' => $request->name,
-            'slug' => Str::slug($request->name),
-            'description' => $request->description,
-            'price' => $request->price,
-            'stock' => $request->stock,
-            'image' => $imagePath,
+            'category_id'  => $request->category_id,
+            'name'         => $request->name,
+            'slug'         => Str::slug($request->name),
+            'description'  => $request->description,
+            'price'        => $request->price,
+            'stock'        => $request->stock,
+            'image'        => $imagePath,
             'is_available' => $request->boolean('is_available', true),
         ]);
 
@@ -63,12 +63,12 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
         $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'name' => 'required|string|max:255|unique:products,name,' . $product->id,
-            'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'category_id'  => 'required|exists:categories,id',
+            'name'         => 'required|string|max:255|unique:products,name,' . $product->id,
+            'description'  => 'nullable|string',
+            'price'        => 'required|numeric|min:0',
+            'stock'        => 'required|integer|min:0',
+            'image'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'is_available' => 'boolean',
         ]);
 
@@ -79,13 +79,13 @@ class ProductController extends Controller
         }
 
         $product->update([
-            'category_id' => $request->category_id,
-            'name' => $request->name,
-            'slug' => Str::slug($request->name),
-            'description' => $request->description,
-            'price' => $request->price,
-            'stock' => $request->stock,
-            'image' => $imagePath,
+            'category_id'  => $request->category_id,
+            'name'         => $request->name,
+            'slug'         => Str::slug($request->name),
+            'description'  => $request->description,
+            'price'        => $request->price,
+            'stock'        => $request->stock,
+            'image'        => $imagePath,
             'is_available' => $request->boolean('is_available', true),
         ]);
 

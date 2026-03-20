@@ -1,74 +1,156 @@
 @php use Illuminate\Support\Facades\Storage; @endphp
-<x-app-layout>
+<x-admin-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Products</h2>
+        <div class="admin-page-header">
+            <div>
+                <h2 class="admin-page-title">Products</h2>
+                <p class="admin-page-subtitle">Manage your product catalogue.</p>
+            </div>
+            <a href="{{ route('admin.products.create') }}" class="admin-btn-primary">+ Add Product</a>
+        </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+    @if(session('success'))
+        <div class="admin-flash success" style="margin:var(--space-md) var(--space-lg) 0;">
+            {{ session('success') }}
+        </div>
+    @endif
 
-                @if(session('success'))
-                    <div class="mb-4 p-4 bg-green-100 text-green-800 rounded">{{ session('success') }}</div>
-                @endif
+    <div class="admin-content">
 
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold">All Products</h3>
-                    <a href="{{ route('admin.products.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">+ Add Product</a>
+        {{-- FILTER BAR --}}
+        <div class="admin-card" style="padding: 14px var(--space-md);">
+            <div class="orders-filter-bar">
+                <div class="filter-group">
+                    <label class="filter-label">Category</label>
+                    <select id="categoryFilter" class="admin-select" onchange="filterProducts()">
+                        <option value="">All Categories</option>
+                        @foreach(\App\Models\Category::orderBy('name')->get() as $cat)
+                            <option value="{{ $cat->name }}">{{ $cat->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
-
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="border-b">
-                            <th class="py-2">#</th>
-                            <th class="py-2">Image</th>
-                            <th class="py-2">Name</th>
-                            <th class="py-2">Category</th>
-                            <th class="py-2">Price</th>
-                            <th class="py-2">Stock</th>
-                            <th class="py-2">Available</th>
-                            <th class="py-2">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($products as $product)
-                        <tr class="border-b">
-                            <td class="py-2">{{ $loop->iteration }}</td>
-                            <td class="py-2">
-                                @if($product->image)
-                                    <img src="{{ Storage::url($product->image) }}" class="w-12 h-12 object-cover rounded">
-                                @else
-                                    <span class="text-gray-400">No image</span>
-                                @endif
-                            </td>
-                            <td class="py-2">{{ $product->name }}</td>
-                            <td class="py-2">{{ $product->category->name }}</td>
-                            <td class="py-2">₱{{ number_format($product->price, 2) }}</td>
-                            <td class="py-2">{{ $product->stock }}</td>
-                            <td class="py-2">
-                                @if($product->is_available)
-                                    <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">Yes</span>
-                                @else
-                                    <span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs">No</span>
-                                @endif
-                            </td>
-                            <td class="py-2 flex gap-2">
-                                <a href="{{ route('admin.products.edit', $product) }}" class="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500">Edit</a>
-                                <form action="{{ route('admin.products.destroy', $product) }}" method="POST" onsubmit="return confirm('Are you sure?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr><td colspan="8" class="py-4 text-center text-gray-500">No products found.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-
-                <div class="mt-4">{{ $products->links() }}</div>
+                <div class="filter-group">
+                    <label class="filter-label">Availability</label>
+                    <select id="availabilityFilter" class="admin-select" onchange="filterProducts()">
+                        <option value="">All</option>
+                        <option value="yes">Available</option>
+                        <option value="no">Unavailable</option>
+                    </select>
+                </div>
+                <div class="filter-group" style="align-self:flex-end;">
+                    <button onclick="clearFilters()" class="btn-clear-filters">Clear</button>
+                </div>
             </div>
         </div>
+
+        {{-- TABLE --}}
+        <div class="admin-card" style="padding:var(--space-md);">
+            <table id="productsTable" class="admin-table" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Available</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($products as $product)
+                    <tr>
+                        <td>{{ $product->id }}</td>
+                        <td>
+                            @if($product->image)
+                                <img src="{{ Storage::url($product->image) }}" class="admin-thumb">
+                            @else
+                                <span style="font-size:12px;color:var(--ikea-gray);">—</span>
+                            @endif
+                        </td>
+                        <td class="table-product-name">{{ $product->name }}</td>
+                        <td class="table-category">{{ $product->category->name }}</td>
+                        <td>₱{{ number_format($product->price, 2) }}</td>
+                        <td>
+                            @if($product->stock == 0)
+                                <span style="font-weight:700;color:#CC0008;">0</span>
+                            @elseif($product->stock <= 5)
+                                <span style="font-weight:700;color:#f57c00;">{{ $product->stock }}</span>
+                            @else
+                                {{ $product->stock }}
+                            @endif
+                        </td>
+                        <td>
+                            @if($product->is_available)
+                                <span class="badge-yes">Yes</span>
+                            @else
+                                <span class="badge-no">No</span>
+                            @endif
+                        </td>
+                        <td>
+                            <div style="display:flex;gap:8px;align-items:center;">
+                                <a href="{{ route('admin.products.edit', $product) }}" class="btn-edit">Edit</a>
+                                <form action="{{ route('admin.products.destroy', $product) }}" method="POST"
+                                      onsubmit="return confirm('Delete {{ addslashes($product->name) }}?')">
+                                    @csrf @method('DELETE')
+                                    <button class="btn-delete">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="8" class="admin-empty-row">No products found.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
     </div>
-</x-app-layout>
+
+    @push('scripts')
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/jquery.dataTables.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+        <script>
+            var table;
+            $(document).ready(function () {
+                table = $('#productsTable').DataTable({
+                    pageLength: 15,
+                    lengthMenu: [[15, 25, 50, -1], [15, 25, 50, 'All']],
+                    columnDefs: [
+                        { orderable: false, targets: [1, 7] },
+                        { type: 'num', targets: [4, 5] },
+                    ],
+                    order: [[0, 'asc']],
+                    language: {
+                        search: 'Search products:',
+                        lengthMenu: 'Show _MENU_ products',
+                        info: 'Showing _START_–_END_ of _TOTAL_ products',
+                        paginate: { previous: '←', next: '→' },
+                    },
+                });
+            });
+
+            $.fn.dataTable.ext.search.push(function (settings, data) {
+                if (settings.nTable.id !== 'productsTable') return true;
+                var categoryFilter     = document.getElementById('categoryFilter').value.toLowerCase();
+                var availabilityFilter = document.getElementById('availabilityFilter').value.toLowerCase();
+                var rowCategory        = data[3].trim().toLowerCase();
+                var rowAvailability    = data[6].trim().toLowerCase();
+                if (categoryFilter     && rowCategory     !== categoryFilter)    return false;
+                if (availabilityFilter && rowAvailability !== availabilityFilter) return false;
+                return true;
+            });
+
+            function filterProducts() { if (table) table.draw(); }
+            function clearFilters() {
+                document.getElementById('categoryFilter').value     = '';
+                document.getElementById('availabilityFilter').value = '';
+                if (table) table.draw();
+            }
+        </script>
+    @endpush
+
+</x-admin-layout>
