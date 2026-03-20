@@ -14,25 +14,50 @@
         </div>
     @endif
 
-    <div class="admin-dashboard">
+    <div class="admin-content">
 
-        {{-- ── STATUS STRIP ────────────────────────────────────── --}}
-        @php
-            $statusCounts = \App\Models\Order::select('status', \Illuminate\Support\Facades\DB::raw('count(*) as total'))
-                ->groupBy('status')->pluck('total', 'status');
-        @endphp
-        <div class="admin-status-strip">
-            @foreach(['pending' => '🕐', 'processing' => '⚙️', 'completed' => '✅', 'cancelled' => '❌'] as $status => $icon)
-                <div class="admin-status-pill status-{{ $status }}">
-                    <span class="status-icon">{{ $icon }}</span>
-                    <span class="status-count">{{ $statusCounts[$status] ?? 0 }}</span>
-                    <span class="status-label">{{ ucfirst($status) }}</span>
+        {{-- STAT CARDS --}}
+        <div class="admin-stat-grid" style="grid-template-columns:repeat(5,1fr);">
+            <div class="admin-stat-card">
+                <div class="admin-stat-icon revenue">₱</div>
+                <div class="admin-stat-body">
+                    <div class="admin-stat-label">Total Revenue</div>
+                    <div class="admin-stat-value">₱{{ number_format($totalRevenue, 0) }}</div>
+                    <div class="admin-stat-meta">excluding cancelled</div>
                 </div>
-            @endforeach
+            </div>
+            <div class="admin-stat-card">
+                <div class="admin-stat-icon" style="background:#fff3e0;">🕐</div>
+                <div class="admin-stat-body">
+                    <div class="admin-stat-label">Pending</div>
+                    <div class="admin-stat-value" style="color:#f57c00;">{{ $statusCounts['pending'] ?? 0 }}</div>
+                </div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="admin-stat-icon" style="background:#e3f2fd;">⚙️</div>
+                <div class="admin-stat-body">
+                    <div class="admin-stat-label">Processing</div>
+                    <div class="admin-stat-value" style="color:#1565c0;">{{ $statusCounts['processing'] ?? 0 }}</div>
+                </div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="admin-stat-icon" style="background:#e8f5e9;">✅</div>
+                <div class="admin-stat-body">
+                    <div class="admin-stat-label">Completed</div>
+                    <div class="admin-stat-value" style="color:#2e7d32;">{{ $statusCounts['completed'] ?? 0 }}</div>
+                </div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="admin-stat-icon" style="background:#ffebee;">❌</div>
+                <div class="admin-stat-body">
+                    <div class="admin-stat-label">Cancelled</div>
+                    <div class="admin-stat-value" style="color:#CC0008;">{{ $statusCounts['cancelled'] ?? 0 }}</div>
+                </div>
+            </div>
         </div>
 
-        {{-- ── FILTER BAR ───────────────────────────────────────── --}}
-        <div class="admin-card" style="padding: 14px var(--space-md);">
+        {{-- FILTER BAR --}}
+        <div class="admin-card" style="padding:14px var(--space-md);">
             <div class="orders-filter-bar">
                 <div class="filter-group">
                     <label class="filter-label">Status</label>
@@ -66,8 +91,13 @@
             </div>
         </div>
 
-        {{-- ── TABLE ───────────────────────────────────────────── --}}
+        {{-- TABLE --}}
         <div class="admin-card" style="padding:var(--space-md);">
+
+            {{-- TOOLBAR --}}
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                <button onclick="location.reload()" class="btn-clear-filters">↻ Refresh</button>
+            </div>
 
             <table id="ordersTable" class="admin-table" style="width:100%">
                 <thead>
@@ -102,72 +132,18 @@
                                 </span>
                             </td>
                             <td>
-                                <a href="{{ route('admin.orders.show', $order) }}"
-                                   class="table-action-link">Manage</a>
+                                <a href="{{ route('admin.orders.show', $order) }}" class="table-action-link">Manage</a>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" style="padding:48px;text-align:center;color:var(--ikea-gray);">
-                                No orders yet.
-                            </td>
+                            <td colspan="7" class="admin-empty-row">No orders yet.</td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
-
         </div>
     </div>
-
-    <style>
-        .orders-filter-bar {
-            display: flex;
-            align-items: flex-end;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .filter-label {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--ikea-gray);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .admin-date-input {
-            height: 36px;
-            padding: 0 10px;
-            border: 1px solid var(--ikea-border);
-            border-radius: 6px;
-            font-size: var(--text-sm);
-            font-family: 'Noto Sans', sans-serif;
-            color: var(--ikea-dark);
-            background: white;
-            cursor: pointer;
-        }
-        .admin-date-input:focus { outline: none; border-color: var(--ikea-blue); }
-        .btn-clear-filters {
-            height: 36px;
-            padding: 0 16px;
-            background: transparent;
-            border: 1px solid var(--ikea-border);
-            border-radius: 6px;
-            font-size: var(--text-sm);
-            font-weight: 700;
-            font-family: 'Noto Sans', sans-serif;
-            color: var(--ikea-gray);
-            cursor: pointer;
-            transition: all .15s;
-        }
-        .btn-clear-filters:hover {
-            background: var(--ikea-light);
-            border-color: var(--ikea-gray);
-        }
-    </style>
 
     @push('scripts')
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/jquery.dataTables.min.css">
@@ -175,14 +151,16 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
         <script>
             var table;
-
             $(document).ready(function () {
                 table = $('#ordersTable').DataTable({
                     pageLength: 15,
+                    stateSave: true,
+                    lengthMenu: [[15, 25, 50, -1], [15, 25, 50, 'All']],
                     order: [[0, 'desc']],
                     columnDefs: [{ orderable: false, targets: [6] }],
                     language: {
                         search: 'Search orders:',
+                        lengthMenu: 'Show _MENU_ orders',
                         info: 'Showing _START_–_END_ of _TOTAL_ orders',
                         paginate: { previous: '←', next: '→' },
                     },
@@ -191,32 +169,24 @@
 
             $.fn.dataTable.ext.search.push(function (settings, data) {
                 if (settings.nTable.id !== 'ordersTable') return true;
-
                 var statusFilter  = document.getElementById('statusFilter').value.toLowerCase();
                 var paymentFilter = document.getElementById('paymentFilter').value.toLowerCase();
                 var dateFrom      = document.getElementById('dateFrom').value;
                 var dateTo        = document.getElementById('dateTo').value;
-
-                var rowStatus  = data[5].trim().toLowerCase();
-                var rowPayment = data[4].trim().toLowerCase();
-                var rowDate    = data[2];
-
+                var rowStatus     = data[5].trim().toLowerCase();
+                var rowPayment    = data[4].trim().toLowerCase();
+                var rowDate       = data[2];
                 if (statusFilter  && rowStatus  !== statusFilter)  return false;
                 if (paymentFilter && rowPayment !== paymentFilter)  return false;
-
                 if (dateFrom || dateTo) {
                     var d = new Date(rowDate);
                     if (dateFrom && d < new Date(dateFrom)) return false;
                     if (dateTo   && d > new Date(dateTo))   return false;
                 }
-
                 return true;
             });
 
-            function filterOrders() {
-                if (table) table.draw();
-            }
-
+            function filterOrders() { if (table) table.draw(); }
             function clearFilters() {
                 document.getElementById('statusFilter').value  = '';
                 document.getElementById('paymentFilter').value = '';

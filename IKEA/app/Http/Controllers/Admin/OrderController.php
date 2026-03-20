@@ -12,8 +12,12 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::with('user')->latest()->get();
-        return view('admin.orders.index', compact('orders'));
+        $orders       = Order::with('user')->latest()->get();
+        $totalRevenue = Order::whereNotIn('status', ['cancelled'])->sum('total');
+        $statusCounts = Order::selectRaw('status, count(*) as total')
+                            ->groupBy('status')->pluck('total', 'status');
+
+        return view('admin.orders.index', compact('orders', 'totalRevenue', 'statusCounts'));
     }
 
     public function show(Order $order)

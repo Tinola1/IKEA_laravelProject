@@ -62,7 +62,12 @@
             <span class="admin-nav-icon">📋</span>
             <span>Audit Logs</span>
         </a>
-
+        <div class="admin-nav-section-label">Storefront</div>
+        <a href="{{ route('home') }}"
+        class="admin-nav-item">
+            <span class="admin-nav-icon">🏠</span>
+            <span>Back to Store</span>
+        </a>
     </nav>
 
     <div class="admin-sidebar-footer">

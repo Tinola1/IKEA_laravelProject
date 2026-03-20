@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-admin-layout>
     <x-slot name="header">
         <div class="admin-page-header">
             <div>
@@ -772,4 +772,4 @@
     </script>
     @endpush
 
-</x-app-layout>
+</x-admin-layout>

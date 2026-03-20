@@ -1,3 +1,4 @@
+@php use Illuminate\Support\Facades\Storage; @endphp
 <x-admin-layout>
     <x-slot name="header">
         <div class="admin-page-header">
@@ -17,7 +18,7 @@
     <div class="admin-content">
 
         {{-- STAT CARDS --}}
-        <div class="admin-stat-grid" style="grid-template-columns: repeat(3,1fr);">
+        <div class="admin-stat-grid" style="grid-template-columns:repeat(3,1fr);">
             <div class="admin-stat-card">
                 <div class="admin-stat-icon products">📦</div>
                 <div class="admin-stat-body">
@@ -26,24 +27,24 @@
                 </div>
             </div>
             <div class="admin-stat-card">
-                <div class="admin-stat-icon" style="background:#fff3e0">⚠️</div>
+                <div class="admin-stat-icon" style="background:#fff3e0;">⚠️</div>
                 <div class="admin-stat-body">
                     <div class="admin-stat-label">Low Stock</div>
-                    <div class="admin-stat-value" style="color:#f57c00">{{ $lowStock }}</div>
+                    <div class="admin-stat-value" style="color:#f57c00;">{{ $lowStock }}</div>
                     <div class="admin-stat-meta">5 or fewer remaining</div>
                 </div>
             </div>
             <div class="admin-stat-card">
-                <div class="admin-stat-icon" style="background:#ffebee">🚫</div>
+                <div class="admin-stat-icon" style="background:#ffebee;">🚫</div>
                 <div class="admin-stat-body">
                     <div class="admin-stat-label">Out of Stock</div>
-                    <div class="admin-stat-value" style="color:#CC0008">{{ $outOfStock }}</div>
+                    <div class="admin-stat-value" style="color:#CC0008;">{{ $outOfStock }}</div>
                 </div>
             </div>
         </div>
 
         {{-- FILTER BAR --}}
-        <div class="admin-card" style="padding: 14px var(--space-md);">
+        <div class="admin-card" style="padding:14px var(--space-md);">
             <div class="orders-filter-bar">
                 <div class="filter-group">
                     <label class="filter-label">Category</label>
@@ -79,9 +80,19 @@
 
         {{-- INVENTORY TABLE --}}
         <div class="admin-card" style="padding:var(--space-md);">
-            <table id="inventoryTable" class="admin-table" style="width:100%">
+
+            {{-- TABLE TOOLBAR --}}
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <button onclick="location.reload()" class="btn-clear-filters">↻ Refresh</button>
+                </div>
+            </div>
+
+            <table id="inventoryTable" class="admin-table" style="width:100%;">
                 <thead>
                     <tr>
+                        <th>#</th>
+                        <th>Image</th>
                         <th>Product</th>
                         <th>Category</th>
                         <th>Price</th>
@@ -93,16 +104,24 @@
                 <tbody>
                     @forelse($products as $product)
                     <tr>
+                        <td>{{ $product->id }}</td>
+                        <td>
+                            @if($product->image)
+                                <img src="{{ Storage::url($product->image) }}" class="admin-thumb">
+                            @else
+                                <span style="font-size:12px;color:var(--ikea-gray);">—</span>
+                            @endif
+                        </td>
                         <td class="table-product-name">{{ $product->name }}</td>
                         <td class="table-category">{{ $product->category->name }}</td>
                         <td>₱{{ number_format($product->price, 2) }}</td>
                         <td data-stock="{{ $product->stock }}">
                             @if($product->stock == 0)
-                                <span style="font-weight:700;color:#CC0008">0 — Out of Stock</span>
+                                <span style="font-weight:700;color:#CC0008;">0 — Out of Stock</span>
                             @elseif($product->stock <= 5)
-                                <span style="font-weight:700;color:#f57c00">{{ $product->stock }} — Low Stock</span>
+                                <span style="font-weight:700;color:#f57c00;">{{ $product->stock }} — Low Stock</span>
                             @else
-                                <span style="font-weight:700;color:#2e7d32">{{ $product->stock }}</span>
+                                <span style="font-weight:700;color:#2e7d32;">{{ $product->stock }}</span>
                             @endif
                         </td>
                         <td>
@@ -123,7 +142,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="admin-empty-row">No products found.</td>
+                        <td colspan="8" class="admin-empty-row">No products found.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -133,42 +152,7 @@
     </div>
 
     <style>
-        .orders-filter-bar {
-            display: flex;
-            align-items: flex-end;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .filter-label {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--ikea-gray);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .btn-clear-filters {
-            height: 36px;
-            padding: 0 16px;
-            background: transparent;
-            border: 1px solid var(--ikea-border);
-            border-radius: 6px;
-            font-size: var(--text-sm);
-            font-weight: 700;
-            font-family: 'Noto Sans', sans-serif;
-            color: var(--ikea-gray);
-            cursor: pointer;
-            transition: all .15s;
-        }
-        .btn-clear-filters:hover {
-            background: var(--ikea-light);
-            border-color: var(--ikea-gray);
-        }
-        .inline-form { display: flex; align-items: center; gap: 8px; }
+        .inline-form { display:flex; align-items:center; gap:8px; }
         .stock-input {
             width: 72px;
             border: 1px solid var(--ikea-border);
@@ -190,12 +174,13 @@
             $(document).ready(function () {
                 table = $('#inventoryTable').DataTable({
                     pageLength: 15,
+                    stateSave: true,
                     lengthMenu: [[15, 25, 50, -1], [15, 25, 50, 'All']],
                     columnDefs: [
-                        { orderable: false, targets: [5] },
-                        { type: 'num', targets: [2] },
+                        { orderable: false, targets: [1, 7] },
+                        { type: 'num', targets: [0, 4] },
                     ],
-                    order: [[3, 'asc']],
+                    order: [[5, 'asc']],
                     language: {
                         search: 'Search products:',
                         lengthMenu: 'Show _MENU_ products',
@@ -212,20 +197,18 @@
                 var stockFilter        = document.getElementById('stockFilter').value;
                 var availabilityFilter = document.getElementById('availabilityFilter').value.toLowerCase();
 
-                // Col 1 = category, col 3 = stock text, col 4 = availability
-                var rowCategory     = data[1].trim().toLowerCase();
-                var rowAvailability = data[4].trim().toLowerCase();
+                var rowCategory     = data[3].trim().toLowerCase();
+                var rowAvailability = data[6].trim().toLowerCase();
 
-                // Get the raw stock number from the data-stock attribute
                 var stockCell = table.row(dataIndex).node().querySelector('td[data-stock]');
                 var rawStock  = stockCell ? parseInt(stockCell.getAttribute('data-stock')) : 0;
 
                 if (categoryFilter && rowCategory !== categoryFilter) return false;
 
                 if (stockFilter) {
-                    if (stockFilter === 'out' && rawStock !== 0)  return false;
+                    if (stockFilter === 'out' && rawStock !== 0)              return false;
                     if (stockFilter === 'low' && !(rawStock > 0 && rawStock <= 5)) return false;
-                    if (stockFilter === 'ok'  && rawStock <= 5)   return false;
+                    if (stockFilter === 'ok'  && rawStock <= 5)               return false;
                 }
 
                 if (availabilityFilter && rowAvailability !== availabilityFilter) return false;
@@ -233,9 +216,7 @@
                 return true;
             });
 
-            function filterInventory() {
-                if (table) table.draw();
-            }
+            function filterInventory() { if (table) table.draw(); }
 
             function clearFilters() {
                 document.getElementById('categoryFilter').value     = '';
