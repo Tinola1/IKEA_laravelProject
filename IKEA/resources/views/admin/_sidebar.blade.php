@@ -10,82 +10,88 @@
 
     <nav class="admin-sidebar-nav" aria-label="Admin navigation">
 
-        <div class="admin-nav-section-label">Overview</div>
-        <a href="{{ route('admin.dashboard') }}"
-           class="admin-nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-            <span class="admin-nav-icon">📊</span>
-            <span>Dashboard</span>
-        </a>
+    {{-- Overview --}}
+    <div class="admin-nav-section-label">Overview</div>
+    <a href="{{ route('admin.dashboard') }}"
+       class="admin-nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+        <span class="admin-nav-icon">📊</span>
+        <span>Dashboard</span>
+    </a>
 
-        <div class="admin-nav-section-label">Catalogue</div>
-        <a href="{{ route('admin.products.index') }}"
-           class="admin-nav-item {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
-            <span class="admin-nav-icon">🛋️</span>
-            <span>Products</span>
-        </a>
-        <a href="{{ route('admin.categories.index') }}"
-           class="admin-nav-item {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
-            <span class="admin-nav-icon">🏷️</span>
-            <span>Categories</span>
-        </a>
-        <a href="{{ route('admin.inventory.index') }}"
-           class="admin-nav-item {{ request()->routeIs('admin.inventory.*') ? 'active' : '' }}">
-            <span class="admin-nav-icon">📦</span>
-            <span>Inventory</span>
-            @php $outOfStock = \App\Models\Product::where('stock', '<=', 5)->count(); @endphp
-            @if($outOfStock > 0)
-                <span class="admin-nav-badge">{{ $outOfStock }}</span>
-            @endif
-        </a>
+    {{-- Catalogue --}}
+    <div class="admin-nav-section-label">Catalogue</div>
+    <a href="{{ route('admin.products.index') }}"
+       class="admin-nav-item {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
+        <span class="admin-nav-icon">🛋️</span>
+        <span>Products</span>
+    </a>
+    <a href="{{ route('admin.categories.index') }}"
+       class="admin-nav-item {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+        <span class="admin-nav-icon">🏷️</span>
+        <span>Categories</span>
+    </a>
+    <a href="{{ route('admin.inventory.index') }}"
+       class="admin-nav-item {{ request()->routeIs('admin.inventory.*') ? 'active' : '' }}">
+        <span class="admin-nav-icon">📦</span>
+        <span>Inventory</span>
+        @php $lowStock = \App\Models\Product::where('stock', '<=', 5)->where('stock', '>', 0)->count(); @endphp
+        @if($lowStock > 0)
+            <span class="admin-nav-badge">{{ $lowStock }}</span>
+        @endif
+    </a>
 
-        <div class="admin-nav-section-label">Sales</div>
-        <a href="{{ route('admin.orders.index') }}"
-           class="admin-nav-item {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
-            <span class="admin-nav-icon">🧾</span>
-            <span>Orders</span>
-            @php $pendingOrders = \App\Models\Order::where('status', 'pending')->count(); @endphp
-            @if($pendingOrders > 0)
-                <span class="admin-nav-badge">{{ $pendingOrders }}</span>
-            @endif
-        </a>
-        <a href="{{ route('admin.sales.create') }}"
-           class="admin-nav-item {{ request()->routeIs('admin.sales.*') ? 'active' : '' }}">
-            <span class="admin-nav-icon">🛒</span>
-            <span>In-Store Sale</span>
-        </a>
+    {{-- Transactions --}}
+    <div class="admin-nav-section-label">Transactions</div>
+    <a href="{{ route('admin.orders.index') }}"
+       class="admin-nav-item {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
+        <span class="admin-nav-icon">🧾</span>
+        <span>Orders</span>
+        @php $pendingOrders = \App\Models\Order::where('status', 'pending')->count(); @endphp
+        @if($pendingOrders > 0)
+            <span class="admin-nav-badge">{{ $pendingOrders }}</span>
+        @endif
+    </a>
+    <a href="{{ route('admin.sales.create') }}"
+       class="admin-nav-item {{ request()->routeIs('admin.sales.*') ? 'active' : '' }}">
+        <span class="admin-nav-icon">🛒</span>
+        <span>In-Store Sale</span>
+    </a>
 
-        <div class="admin-nav-section-label">Showroom</div>
-        <a href="{{ route('admin.appointments.index') }}"
-           class="admin-nav-item {{ request()->routeIs('admin.appointments.*') ? 'active' : '' }}">
-            <span class="admin-nav-icon">📅</span>
-            <span>Appointments</span>
-            @php $pendingAppts = \App\Models\Appointment::where('status', 'pending')->count(); @endphp
-            @if($pendingAppts > 0)
-                <span class="admin-nav-badge">{{ $pendingAppts }}</span>
-            @endif
-        </a>
+    {{-- Customers --}}
+    <div class="admin-nav-section-label">Customers</div>
+    <a href="{{ route('admin.users.index') }}"
+       class="admin-nav-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+        <span class="admin-nav-icon">👥</span>
+        <span>Users</span>
+    </a>
+    <a href="{{ route('admin.reviews.index') }}"
+       class="admin-nav-item {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
+        <span class="admin-nav-icon">⭐</span>
+        <span>Reviews</span>
+    </a>
+    <a href="{{ route('admin.appointments.index') }}"
+       class="admin-nav-item {{ request()->routeIs('admin.appointments.*') ? 'active' : '' }}">
+        <span class="admin-nav-icon">📅</span>
+        <span>Appointments</span>
+        @php $pendingAppts = \App\Models\Appointment::where('status', 'pending')->count(); @endphp
+        @if($pendingAppts > 0)
+            <span class="admin-nav-badge">{{ $pendingAppts }}</span>
+        @endif
+    </a>
 
-        <div class="admin-nav-section-label">People</div>
-        <a href="{{ route('admin.users.index') }}"
-           class="admin-nav-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
-            <span class="admin-nav-icon">👥</span>
-            <span>Users</span>
-        </a>
+    {{-- System --}}
+    <div class="admin-nav-section-label">System</div>
+    <a href="{{ route('admin.audit-logs.index') }}"
+       class="admin-nav-item {{ request()->routeIs('admin.audit-logs.*') ? 'active' : '' }}">
+        <span class="admin-nav-icon">📋</span>
+        <span>Audit Logs</span>
+    </a>
+    <a href="{{ route('home') }}" class="admin-nav-item">
+        <span class="admin-nav-icon">🏠</span>
+        <span>Back to Store</span>
+    </a>
 
-        <div class="admin-nav-section-label">System</div>
-        <a href="{{ route('admin.audit-logs.index') }}"
-           class="admin-nav-item {{ request()->routeIs('admin.audit-logs.*') ? 'active' : '' }}">
-            <span class="admin-nav-icon">📋</span>
-            <span>Audit Logs</span>
-        </a>
-
-        <div class="admin-nav-section-label">Storefront</div>
-        <a href="{{ route('home') }}" class="admin-nav-item">
-            <span class="admin-nav-icon">🏠</span>
-            <span>Back to Store</span>
-        </a>
-
-    </nav>
+</nav>
 
     <div class="admin-sidebar-footer">
         <div class="admin-sidebar-user">

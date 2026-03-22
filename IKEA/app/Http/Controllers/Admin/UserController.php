@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -18,6 +19,28 @@ class UserController extends Controller
 
         return view('admin.users.index', compact('users', 'customerCount', 'staffCount', 'inactiveCount'));
     }
+    
+    public function store(Request $request)
+{
+    $request->validate([
+        'name'     => 'required|string|max:255',
+        'email'    => 'required|email|max:255|unique:users,email',
+        'password' => 'required|string|min:8',
+        'role'     => 'required|in:admin,staff,customer',
+    ]);
+
+    $user = User::create([
+        'name'              => $request->name,
+        'email'             => $request->email,
+        'password'          => Hash::make($request->password),
+        'email_verified_at' => now(),
+        'is_active'         => true,
+    ]);
+
+    $user->syncRoles([$request->role]);
+
+    return back()->with('success', "{$user->name} has been created successfully.");
+}
 
     public function toggleStatus(User $user)
     {

@@ -145,7 +145,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|staff'])
     Route::patch('users/{user}/role', [AdminUserController::class, 'updateRole'])->name('users.role');
     Route::patch('users/{user}/status', [AdminUserController::class, 'toggleStatus'])->name('users.status');
     Route::delete('users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
-
+    Route::post('users', [AdminUserController::class, 'store'])->name('users.store');
+    
     // Audit logs
     Route::get('audit-logs', [AdminAuditLogController::class, 'index'])->name('audit-logs.index');
 

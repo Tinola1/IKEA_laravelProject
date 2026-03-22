@@ -1,11 +1,15 @@
 <x-admin-layout>
     <x-slot name="title">Users</x-slot>
     <x-slot name="header">
-        <div class="admin-page-header">
+       <div class="admin-page-header">
             <div>
                 <h2 class="admin-page-title">User Management</h2>
                 <p class="admin-page-subtitle">{{ $users->total() }} registered accounts</p>
             </div>
+            <button onclick="document.getElementById('createUserModal').style.display='flex'"
+                    class="admin-btn-primary">
+                + Create User
+            </button>
         </div>
     </x-slot>
 
@@ -182,5 +186,107 @@
             });
         </script>
     @endpush
+    {{-- Create User Modal --}}
+    <div id="createUserModal"
+        onclick="if(event.target===this)this.style.display='none'"
+        style="display:none;position:fixed;inset:0;z-index:999;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);">
+        <div style="background:white;border-radius:12px;padding:var(--space-md);width:100%;max-width:480px;margin:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
 
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-md);">
+                <h3 style="font-size:var(--text-lg);font-weight:800;color:var(--ikea-dark);">Create New User</h3>
+                <button onclick="document.getElementById('createUserModal').style.display='none'"
+                        style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--ikea-gray);">✕</button>
+            </div>
+
+            <form method="POST" action="{{ route('admin.users.store') }}" id="createUserForm" novalidate>
+                @csrf
+
+                <div class="form-group">
+                    <label class="form-label">Full Name <span class="required">*</span></label>
+                    <input type="text" name="name" class="form-input"
+                        placeholder="e.g. Juan dela Cruz" value="{{ old('name') }}">
+                    @error('name')<p class="form-error">{{ $message }}</p>@enderror
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email Address <span class="required">*</span></label>
+                    <input type="email" name="email" class="form-input"
+                        placeholder="user@example.com" value="{{ old('email') }}">
+                    @error('email')<p class="form-error">{{ $message }}</p>@enderror
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Password <span class="required">*</span></label>
+                        <input type="password" name="password" class="form-input"
+                            placeholder="Min. 8 characters">
+                        @error('password')<p class="form-error">{{ $message }}</p>@enderror
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Role <span class="required">*</span></label>
+                        <select name="role" class="form-input">
+                            <option value="customer" {{ old('role') === 'customer' ? 'selected' : '' }}>Customer</option>
+                            <option value="staff"    {{ old('role') === 'staff'    ? 'selected' : '' }}>Staff</option>
+                            <option value="admin"    {{ old('role') === 'admin'    ? 'selected' : '' }}>Admin</option>
+                        </select>
+                        @error('role')<p class="form-error">{{ $message }}</p>@enderror
+                    </div>
+                </div>
+
+                <div style="display:flex;gap:8px;margin-top:var(--space-md);padding-top:var(--space-md);border-top:1px solid var(--ikea-border);">
+                    <button type="submit" class="admin-btn-primary">Create User</button>
+                    <button type="button"
+                            onclick="document.getElementById('createUserModal').style.display='none'"
+                            class="admin-btn-ghost">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    // Re-open modal if there are validation errors
+    @if($errors->any())
+        document.getElementById('createUserModal').style.display = 'flex';
+    @endif
+
+    // Client-side validation
+    document.getElementById('createUserForm').addEventListener('submit', function(e) {
+        let valid = true;
+        this.querySelectorAll('.js-error').forEach(el => el.remove());
+
+        const name     = this.querySelector('[name="name"]');
+        const email    = this.querySelector('[name="email"]');
+        const password = this.querySelector('[name="password"]');
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!name.value.trim()) {
+            valid = false; showModalError(name, 'Full name is required.');
+        }
+        if (!email.value.trim()) {
+            valid = false; showModalError(email, 'Email is required.');
+        } else if (!emailRegex.test(email.value.trim())) {
+            valid = false; showModalError(email, 'Please enter a valid email.');
+        }
+        if (!password.value) {
+            valid = false; showModalError(password, 'Password is required.');
+        } else if (password.value.length < 8) {
+            valid = false; showModalError(password, 'Password must be at least 8 characters.');
+        }
+
+        if (!valid) e.preventDefault();
+    });
+
+    function showModalError(input, message) {
+        input.style.borderColor = '#CC0008';
+        const msg = document.createElement('p');
+        msg.className = 'form-error js-error';
+        msg.textContent = message;
+        input.parentNode.appendChild(msg);
+        input.addEventListener('input', function() {
+            this.style.borderColor = '';
+            const err = this.parentNode.querySelector('.js-error');
+            if (err) err.remove();
+        }, { once: true });
+    }
+    </script>
 </x-admin-layout>

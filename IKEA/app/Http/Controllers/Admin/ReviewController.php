@@ -11,7 +11,7 @@ class ReviewController extends Controller
     {
         $reviews = Review::with('user', 'product')
             ->latest()
-            ->paginate(50);
+            ->get();
 
         $totalReviews  = Review::count();
         $averageRating = round(Review::avg('rating') ?? 0, 1);
