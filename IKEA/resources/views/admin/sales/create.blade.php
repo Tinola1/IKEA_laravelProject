@@ -1,4 +1,5 @@
-<x-app-layout>
+<x-admin-layout>
+    <x-slot name="title">In-Store Sale</x-slot>
     <x-slot name="header">
         <div class="admin-page-header">
             <div>
@@ -305,4 +306,4 @@
         });
     </script>
 
-</x-app-layout>
+</x-admin-layout>

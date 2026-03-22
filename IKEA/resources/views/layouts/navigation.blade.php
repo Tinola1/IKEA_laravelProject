@@ -29,17 +29,6 @@
                 My Orders
             </a>
 
-            @if(Auth::user()->hasRole('admin'))
-                <a href="{{ route('admin.orders.index') }}"
-                   class="{{ request()->routeIs('admin.orders.*') ? 'ikea-nav-active' : '' }}">
-                    Admin Orders
-                </a>
-                <a href="{{ route('admin.inventory.index') }}"
-                   class="{{ request()->routeIs('admin.inventory.*') ? 'ikea-nav-active' : '' }}">
-                    Inventory
-                </a>
-            @endif
-
             {{-- Profile dropdown --}}
             <div class="ikea-nav-dropdown" x-data="{ open: false }">
                 <button

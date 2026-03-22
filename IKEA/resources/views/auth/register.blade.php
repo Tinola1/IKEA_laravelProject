@@ -5,7 +5,7 @@
         <p class="auth-form-subtitle">Join IKEA Family — it's free</p>
     </div>
 
-    <form method="POST" action="{{ route('register') }}" class="auth-form" id="registerForm" novalidate>
+    <form method="POST" action="{{ route('register') }}" class="auth-form" id="registerForm" enctype="multipart/form-data" novalidate>
         @csrf
 
         {{-- Name --}}
@@ -69,6 +69,18 @@
                 placeholder="Re-enter your password"
             />
             <x-input-error :messages="$errors->get('password_confirmation')" class="auth-error" />
+        </div>
+        
+        {{-- Avatar --}}
+        <div class="auth-field">
+            <x-input-label for="avatar" :value="__('Profile photo (optional)')" class="auth-label" />
+            <input id="avatar"
+                type="file"
+                name="avatar"
+                accept="image/jpg,image/jpeg,image/png,image/webp"
+                class="auth-input"
+                style="padding: 8px; cursor: pointer;">
+            <x-input-error :messages="$errors->get('avatar')" class="auth-error" />
         </div>
 
         {{-- Submit --}}
