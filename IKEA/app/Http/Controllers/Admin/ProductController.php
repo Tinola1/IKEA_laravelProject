@@ -171,6 +171,36 @@ class ProductController extends Controller
             ->with('success', count($products) . ' product(s) deleted.');
     }
 
+    public function bulkUnavailable(Request $request)
+    {
+        $ids = explode(',', $request->input('ids', ''));
+        $ids = array_filter(array_map('intval', $ids));
+
+        if (empty($ids)) {
+            return redirect()->route('admin.products.index')->with('error', 'No products selected.');
+        }
+
+        Product::whereIn('id', $ids)->update(['is_available' => false]);
+
+        return redirect()->route('admin.products.index')
+            ->with('success', count($ids) . ' product(s) marked as unavailable.');
+    }
+    
+    public function bulkAvailable(Request $request)
+    {
+        $ids = explode(',', $request->input('ids', ''));
+        $ids = array_filter(array_map('intval', $ids));
+
+        if (empty($ids)) {
+            return redirect()->route('admin.products.index')->with('error', 'No products selected.');
+        }
+
+        Product::whereIn('id', $ids)->update(['is_available' => true]);
+
+        return redirect()->route('admin.products.index')
+            ->with('success', count($ids) . ' product(s) marked as available.');
+    }
+
     public function import(Request $request)
     {
         $request->validate([

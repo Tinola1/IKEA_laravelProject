@@ -117,6 +117,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|staff'])
 
     // Products
     Route::post('products/bulk-destroy', [ProductController::class, 'bulkDestroy'])->name('products.bulk-destroy');
+    Route::post('products/bulk-unavailable', [ProductController::class, 'bulkUnavailable'])->name('products.bulk-unavailable');
+    Route::post('products/bulk-available', [ProductController::class, 'bulkAvailable'])->name('products.bulk-available');
     Route::post('products/preview', [ProductController::class, 'import'])->name('products.import');
     Route::post('products/confirm', [ProductController::class, 'confirmImport'])->name('products.confirm');
     Route::get('products/template', [ProductController::class, 'downloadTemplate'])->name('products.template');

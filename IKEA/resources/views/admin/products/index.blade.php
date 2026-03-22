@@ -110,6 +110,12 @@
                     <button id="btnBulkDelete" onclick="bulkDelete()" style="display:none;height:36px;padding:0 16px;background:#CC0008;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;">
                         🗑 Delete Selected (<span id="selectedCount">0</span>)
                     </button>
+                    <button id="btnBulkUnavailable" onclick="bulkUnavailable()" style="display:none;height:36px;padding:0 16px;background:#f57c00;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;">
+                        🚫 Mark Unavailable (<span id="selectedCount2">0</span>)
+                    </button>
+                    <button id="btnBulkAvailable" onclick="bulkAvailable()" style="display:none;height:36px;padding:0 16px;background:#2e7d32;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;">
+                        ✅ Mark Available (<span id="selectedCount3">0</span>)
+                    </button>
                 </div>
                 <div style="display:flex;gap:8px;align-items:center;">
                     <a href="{{ route('admin.products.template') }}" class="btn-clear-filters">⬇ Download Import Template</a>
@@ -240,8 +246,11 @@
 
             function updateBulkBar() {
                 var count = table.$('.row-check:checked').length;
-                document.getElementById('selectedCount').textContent = count;
+                document.getElementById('selectedCount2').textContent = count;
+                document.getElementById('selectedCount3').textContent = count;
                 document.getElementById('btnBulkDelete').style.display = count > 0 ? 'inline-flex' : 'none';
+                document.getElementById('btnBulkUnavailable').style.display = count > 0 ? 'inline-flex' : 'none';
+                document.getElementById('btnBulkAvailable').style.display = count > 0 ? 'inline-flex' : 'none';
             }
 
             function bulkDelete() {
@@ -256,6 +265,30 @@
                 form.submit();
             }
 
+            function bulkUnavailable() {
+                var ids = table.$('.row-check:checked').map(function () { return this.value; }).get();
+                if (!ids.length) return;
+                if (!confirm('Mark ' + ids.length + ' product(s) as unavailable?')) return;
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ route('admin.products.bulk-unavailable') }}';
+                form.innerHTML = '@csrf<input name="ids" value="' + ids.join(',') + '">';
+                document.body.appendChild(form);
+                form.submit();
+            }
+            
+            function bulkAvailable() {
+                var ids = table.$('.row-check:checked').map(function () { return this.value; }).get();
+                if (!ids.length) return;
+                if (!confirm('Mark ' + ids.length + ' product(s) as available?')) return;
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ route('admin.products.bulk-available') }}';
+                form.innerHTML = '@csrf<input name="ids" value="' + ids.join(',') + '">';
+                document.body.appendChild(form);
+                form.submit();
+            }
+            
             $.fn.dataTable.ext.search.push(function (settings, data) {
                 if (settings.nTable.id !== 'productsTable') return true;
                 var categoryFilter     = document.getElementById('categoryFilter').value.toLowerCase();
