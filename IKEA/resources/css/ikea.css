@@ -2116,3 +2116,38 @@ input.auth-input:focus {
     border-color: var(--ikea-blue);
 }
 .filter-price-input::placeholder { color: var(--ikea-gray); }
+
+/* ── HERO SEARCH ──────────────────────────────────────── */
+.hero-search-form { margin-bottom: var(--space-md); }
+.hero-search-wrap {
+    display: flex;
+    background: white;
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    max-width: 480px;
+}
+.hero-search-input {
+    flex: 1;
+    border: none;
+    padding: 14px 20px;
+    font-size: var(--text-base);
+    font-family: 'Noto Sans', sans-serif;
+    color: var(--ikea-dark);
+    outline: none;
+    background: transparent;
+}
+.hero-search-input::placeholder { color: var(--ikea-gray); }
+.hero-search-btn {
+    background: var(--ikea-blue);
+    color: white;
+    border: none;
+    padding: 14px 24px;
+    font-size: var(--text-base);
+    font-weight: 700;
+    font-family: 'Noto Sans', sans-serif;
+    cursor: pointer;
+    transition: background var(--transition-fast);
+    flex-shrink: 0;
+}
+.hero-search-btn:hover { background: #004a8c; }

@@ -10,6 +10,17 @@
                 <span class="hero-tag">New Collection 2025</span>
                 <h1>Beautiful homes<br>start <span>here.</span></h1>
                 <p>Discover furniture and home furnishings that make everyday life better — designed for real life at prices that make sense.</p>
+                <form method="GET" action="{{ route('home') }}" class="hero-search-form">
+                    <div class="hero-search-wrap">
+                        <input type="text"
+                            name="search"
+                            value="{{ request('search') }}"
+                            placeholder="Search furniture, sofas, beds…"
+                            class="hero-search-input"
+                            aria-label="Search products">
+                        <button type="submit" class="hero-search-btn">Search</button>
+                    </div>
+                </form>
                 <div class="hero-cta">
                     <a href="{{ route('shop.index') }}" class="cta-main">Shop Now</a>
                     <a href="#" class="cta-outline">View Catalogue</a>
@@ -136,81 +147,91 @@
             </div>
         </section>
 
-        {{-- ── POPULAR PRODUCTS ── --}}
+        {{-- ── POPULAR PRODUCTS / SEARCH RESULTS ── --}}
         @php
-            $productEmojis = [
-                1 => '🛋️',
-                2 => '🛏️',
-                3 => '🪑',
-                4 => '🪑',
-                5 => '🍳',
-            ];
-            $newestIds = $featuredProducts->sortByDesc('created_at')->take(3)->pluck('id');
+            $productEmojis = [1=>'🛋️',2=>'🛏️',3=>'🪑',4=>'🪑',5=>'🍳'];
+            $isSearching   = isset($searchQuery) && $searchQuery !== '';
+            $displayList   = $isSearching ? $searchResults : $featuredProducts;
+            $newestIds     = $isSearching ? collect() : $featuredProducts->sortByDesc('created_at')->take(3)->pluck('id');
         @endphp
 
-        <section class="section" aria-label="Popular products">
+        <section class="section" aria-label="{{ $isSearching ? 'Search results' : 'Popular products' }}">
             <div class="section-header">
-                <h2>Popular right now</h2>
-                <a href="{{ route('shop.index') }}" aria-label="See all products">See all products →</a>
+                @if($isSearching)
+                    <h2>Results for "{{ $searchQuery }}"</h2>
+                    <a href="{{ route('home') }}">Clear search ×</a>
+                @else
+                    <h2>Popular right now</h2>
+                    <a href="{{ route('shop.index') }}">See all products →</a>
+                @endif
             </div>
 
-            <div class="products-grid">
-                @forelse($featuredProducts as $product)
-                    @php
-                        if ($product->stock <= 5 && $product->stock > 0) {
-                            $badge = 'Low Stock'; $badgeClass = 'sale';
-                        } elseif ($product->stock === 0) {
-                            $badge = 'Out of Stock'; $badgeClass = 'sale';
-                        } elseif ($newestIds->contains($product->id)) {
-                            $badge = 'New'; $badgeClass = 'new';
-                        } elseif ($product->price < 5000) {
-                            $badge = 'Great Value'; $badgeClass = '';
-                        } else {
-                            $badge = null; $badgeClass = '';
-                        }
-                        $emoji   = $productEmojis[$product->category_id] ?? '🏠';
-                        $inStock = $product->is_available && $product->stock > 0;
-                    @endphp
+            @if($isSearching && $displayList->isEmpty())
+                <div style="text-align:center;padding:48px;color:var(--ikea-gray);">
+                    <div style="font-size:48px;margin-bottom:16px;">🔍</div>
+                    <h3 style="font-weight:700;margin-bottom:8px;">No results for "{{ $searchQuery }}"</h3>
+                    <p style="margin-bottom:16px;">Try a different search term or browse all products.</p>
+                    <a href="{{ route('shop.index') }}" class="cta-main" style="display:inline-block;">Browse Shop</a>
+                </div>
+            @else
+                <div class="products-grid">
+                    @foreach($displayList as $product)
+                        @php
+                            $inStock = $product->is_available && $product->stock > 0;
+                            if ($product->stock <= 5 && $product->stock > 0) {
+                                $badge = 'Low Stock'; $badgeClass = 'sale';
+                            } elseif ($product->stock === 0) {
+                                $badge = 'Out of Stock'; $badgeClass = 'sale';
+                            } elseif ($newestIds->contains($product->id)) {
+                                $badge = 'New'; $badgeClass = 'new';
+                            } elseif ($product->price < 5000) {
+                                $badge = 'Great Value'; $badgeClass = '';
+                            } else {
+                                $badge = null; $badgeClass = '';
+                            }
+                            $emoji = $productEmojis[$product->category_id] ?? '🏠';
+                        @endphp
 
-                    <a href="{{ route('shop.show', $product) }}" class="product-card">
-                        <div class="product-img">
-                            @if($product->image)
-                                <img src="{{ asset('storage/' . $product->image) }}"
-                                     alt="{{ $product->name }}"
-                                     style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;"
-                                     loading="lazy">
-                            @else
-                                <span aria-hidden="true">{{ $emoji }}</span>
-                            @endif
-                            @if($badge)
-                                <span class="product-badge {{ $badgeClass }}">{{ $badge }}</span>
-                            @endif
-                        </div>
-                        <div class="product-info">
-                            <div class="name">{{ $product->name }}</div>
-                            <div class="desc desc-clamp">{{ $product->description }}</div>
-                            <div>
-                                <span class="price">₱{{ number_format($product->price, 0) }}</span>
-                                @if($product->stock <= 5 && $product->stock > 0)
-                                    <span class="stock-warning" style="margin-left:8px;">
-                                        Only {{ $product->stock }} left!
-                                    </span>
+                        <a href="{{ route('shop.show', $product) }}" class="product-card">
+                            <div class="product-img">
+                                @if($product->image)
+                                    <img src="{{ asset('storage/' . $product->image) }}"
+                                        alt="{{ $product->name }}"
+                                        style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;"
+                                        loading="lazy">
+                                @else
+                                    <span aria-hidden="true">{{ $emoji }}</span>
+                                @endif
+                                @if($badge)
+                                    <span class="product-badge {{ $badgeClass }}">{{ $badge }}</span>
                                 @endif
                             </div>
-                        </div>
-                        <button class="add-btn"
-                                aria-label="Add {{ $product->name }} to cart"
-                                @unless($inStock) disabled @endunless
-                                @unless($inStock) style="opacity:0.5;cursor:not-allowed;background:#ccc;" @endunless>
-                            {{ $inStock ? 'View Product' : 'Out of Stock' }}
-                        </button>
-                    </a>
-                @empty
-                    <div style="grid-column:1/-1;padding:48px;text-align:center;color:var(--ikea-gray);">
-                        No products available right now. Check back soon!
+                            <div class="product-info">
+                                <div class="name">{{ $product->name }}</div>
+                                <div class="desc desc-clamp">{{ $product->description }}</div>
+                                <div>
+                                    <span class="price">₱{{ number_format($product->price, 0) }}</span>
+                                    @if($product->stock <= 5 && $product->stock > 0)
+                                        <span class="stock-warning" style="margin-left:8px;">Only {{ $product->stock }} left!</span>
+                                    @endif
+                                </div>
+                            </div>
+                            <button class="add-btn"
+                                    @unless($inStock) disabled @endunless
+                                    @unless($inStock) style="opacity:0.5;cursor:not-allowed;background:#ccc;" @endunless>
+                                {{ $inStock ? 'View Product' : 'Out of Stock' }}
+                            </button>
+                        </a>
+                    @endforeach
+                </div>
+
+                {{-- Pagination for search results --}}
+                @if($isSearching && $displayList->hasPages())
+                    <div style="display:flex;justify-content:center;margin-top:var(--space-lg);">
+                        {{ $displayList->links() }}
                     </div>
-                @endforelse
-            </div>
+                @endif
+            @endif
         </section>
 
         {{-- ── MEMBERSHIP ── --}}
