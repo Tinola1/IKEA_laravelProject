@@ -40,10 +40,9 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // ── Authenticated user routes ────────────────────────────────────
-Route::middleware(['auth'])->group(function () {
-
+Route::middleware(['auth', 'verified'])->group(function () {
 // For sake of testing, change to below to switch back to AUTHENTICATION
-// Route::middleware(['auth', 'verified'])->group(function () {
+// Route::middleware(['auth'])->group(function () {
 
     // Reviews (customer)
     Route::post('/shop/{product}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
