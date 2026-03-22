@@ -30,9 +30,9 @@ class ProductController extends Controller
     }
 
     public function show(Product $product)
-    {
-        abort_if(!$product->is_available, 404);
-        $product->load('productImages');
-        return view('shop.products.show', compact('product'));
-    }
+{
+    abort_if(!$product->is_available, 404);
+    $product->load('category');
+    return view('shop.products.show', compact('product'));
+}
 }

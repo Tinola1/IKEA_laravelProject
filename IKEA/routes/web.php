@@ -17,6 +17,9 @@ use App\Http\Controllers\Admin\AuditLogController as AdminAuditLogController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
 use App\Http\Controllers\Admin\InStoreSaleController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
+
 
 // ── Public routes ────────────────────────────────────────────────
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -37,6 +40,12 @@ Route::get('/dashboard', function () {
 
 // ── Authenticated user routes ────────────────────────────────────
 Route::middleware('auth')->group(function () {
+
+// Reviews (customer)
+Route::post('/shop/{product}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+Route::patch('/shop/{product}/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
+Route::delete('/shop/{product}/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -80,6 +89,9 @@ Route::middleware('auth')->group(function () {
 
 // ── Admin routes ─────────────────────────────────────────────────
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+    // Reviews (admin)
+Route::get('reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
+Route::delete('reviews/{review}', [AdminReviewController::class, 'destroy'])->name('reviews.destroy');
 
     // Dashboard
     Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');

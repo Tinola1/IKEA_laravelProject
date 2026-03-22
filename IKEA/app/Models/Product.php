@@ -10,14 +10,8 @@ class Product extends Model
     use Searchable;
 
     protected $fillable = [
-        'category_id',
-        'name',
-        'slug',
-        'description',
-        'price',
-        'stock',
-        'image',
-        'is_available',
+        'category_id', 'name', 'slug', 'description',
+        'price', 'stock', 'image', 'is_available',
     ];
 
     public function category()
@@ -25,11 +19,17 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function productImages()
+    public function reviews()
     {
-        return $this->hasMany(ProductImage::class);
+        return $this->hasMany(Review::class)->latest();
     }
 
+    public function averageRating(): float
+    {
+        return round($this->reviews()->avg('rating') ?? 0, 1);
+    }
+
+    // ── Scout ─────────────────────────────────────────────────────
     public function toSearchableArray(): array
     {
         return [
