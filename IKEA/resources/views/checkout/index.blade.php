@@ -6,7 +6,7 @@
 
     <div class="py-12">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
-            <form method="POST" action="{{ route('checkout.store') }}">
+            <form method="POST" action="{{ route('checkout.store') }}" id="checkoutForm" novalidate>
                 @csrf
                 <div class="flex flex-col lg:flex-row gap-6">
 
@@ -128,4 +128,67 @@
             </form>
         </div>
     </div>
+    <script>
+    document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+        let valid = true;
+        document.querySelectorAll('.js-error').forEach(el => el.remove());
+        document.querySelectorAll('.js-invalid').forEach(el => el.style.borderColor = '');
+
+        const rules = [
+            { name: 'full_name',       label: 'Full name',       required: true, minLength: 2 },
+            { name: 'phone',           label: 'Phone number',    required: true, minLength: 7 },
+            { name: 'address',         label: 'Address',         required: true },
+            { name: 'city',            label: 'City',            required: true },
+            { name: 'province',        label: 'Province',        required: true },
+            { name: 'zip_code',        label: 'ZIP code',        required: true },
+        ];
+
+        rules.forEach(rule => {
+            const input = document.querySelector('[name="' + rule.name + '"]');
+            if (!input) return;
+            const val = input.value.trim();
+            let error = null;
+
+            if (rule.required && !val) {
+                error = rule.label + ' is required.';
+            } else if (rule.minLength && val.length < rule.minLength) {
+                error = rule.label + ' is too short.';
+            }
+
+            if (error) {
+                valid = false;
+                input.style.borderColor = '#CC0008';
+                input.classList.add('js-invalid');
+                const msg = document.createElement('p');
+                msg.className = 'js-error';
+                msg.style.cssText = 'color:#CC0008;font-size:12px;margin-top:4px;font-weight:600;';
+                msg.textContent = error;
+                input.parentNode.appendChild(msg);
+            }
+        });
+
+        // Payment method
+        const payment = document.querySelector('[name="payment_method"]:checked');
+        if (!payment) {
+            valid = false;
+            const msg = document.createElement('p');
+            msg.className = 'js-error';
+            msg.style.cssText = 'color:#CC0008;font-size:12px;margin-top:4px;font-weight:600;';
+            msg.textContent = 'Please select a payment method.';
+            const paymentSection = document.querySelector('[name="payment_method"]').closest('div');
+            paymentSection.appendChild(msg);
+        }
+
+        if (!valid) e.preventDefault();
+    });
+
+    document.querySelectorAll('input, select, textarea').forEach(input => {
+        input.addEventListener('input', function() {
+            this.style.borderColor = '';
+            this.classList.remove('js-invalid');
+            const err = this.parentNode.querySelector('.js-error');
+            if (err) err.remove();
+        });
+    });
+    </script>
 </x-app-layout>

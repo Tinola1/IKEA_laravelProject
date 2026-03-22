@@ -8,7 +8,7 @@
     {{-- Session status (e.g. password reset success) --}}
     <x-auth-session-status class="auth-session-status" :status="session('status')" />
 
-    <form method="POST" action="{{ route('login') }}" class="auth-form">
+    <form method="POST" action="{{ route('login') }}" class="auth-form" id="loginForm" novalidate>
         @csrf
 
         {{-- Email --}}
@@ -70,5 +70,44 @@
         </p>
 
     </form>
+    
+    <script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        let valid = true;
+        document.querySelectorAll('.js-error').forEach(el => el.remove());
+        document.querySelectorAll('.auth-input').forEach(el => el.style.borderColor = '');
 
+        const email    = document.querySelector('[name="email"]');
+        const password = document.querySelector('[name="password"]');
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!email.value.trim()) {
+            valid = false; showAuthError(email, 'Email address is required.');
+        } else if (!emailRegex.test(email.value.trim())) {
+            valid = false; showAuthError(email, 'Please enter a valid email address.');
+        }
+
+        if (!password.value) {
+            valid = false; showAuthError(password, 'Password is required.');
+        }
+
+        if (!valid) e.preventDefault();
+    });
+
+    function showAuthError(input, message) {
+        input.style.borderColor = '#CC0008';
+        const msg = document.createElement('p');
+        msg.className = 'auth-error js-error';
+        msg.textContent = message;
+        input.parentNode.appendChild(msg);
+    }
+
+    document.querySelectorAll('.auth-input').forEach(input => {
+        input.addEventListener('input', function() {
+            this.style.borderColor = '';
+            const err = this.parentNode.querySelector('.js-error');
+            if (err) err.remove();
+        });
+    });
+    </script>
 </x-guest-layout>

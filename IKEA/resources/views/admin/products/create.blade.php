@@ -12,7 +12,7 @@
 
     <div class="admin-content">
         <div class="admin-card" style="padding:var(--space-md); max-width:720px;">
-            <form method="POST" action="{{ route('admin.products.store') }}" enctype="multipart/form-data">
+            <form method="POST" action="{{ route('admin.products.store') }}" enctype="multipart/form-data" id="createProductForm" novalidate>
                 @csrf
 
                 <div class="form-group">
@@ -154,6 +154,63 @@
                 reader.readAsDataURL(file);
             });
         }
+        
+        document.getElementById('createProductForm').addEventListener('submit', function(e) {
+            let valid = true;
+            const errors = {};
+
+            const name = document.querySelector('[name="name"]');
+            const price = document.querySelector('[name="price"]');
+            const stock = document.querySelector('[name="stock"]');
+            const category = document.querySelector('[name="category_id"]');
+
+            // Clear previous errors
+            document.querySelectorAll('.js-error').forEach(el => el.remove());
+
+            if (!category.value) {
+                errors.category_id = 'Please select a category.';
+                valid = false;
+            }
+
+            if (!name.value.trim()) {
+                errors.name = 'Product name is required.';
+                valid = false;
+            } else if (name.value.trim().length > 255) {
+                errors.name = 'Product name must not exceed 255 characters.';
+                valid = false;
+            }
+
+            if (!price.value || parseFloat(price.value) < 0) {
+                errors.price = 'Please enter a valid price.';
+                valid = false;
+            }
+
+            if (!stock.value || parseInt(stock.value) < 0) {
+                errors.stock = 'Please enter a valid stock quantity.';
+                valid = false;
+            }
+
+            // Inject error messages
+            Object.keys(errors).forEach(field => {
+                const input = document.querySelector('[name="' + field + '"]');
+                const msg = document.createElement('p');
+                msg.className = 'form-error js-error';
+                msg.textContent = errors[field];
+                input.parentNode.appendChild(msg);
+                input.style.borderColor = '#CC0008';
+            });
+
+            if (!valid) e.preventDefault();
+        });
+
+        // Clear red border on input
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('input', function() {
+                this.style.borderColor = '';
+                const err = this.parentNode.querySelector('.js-error');
+                if (err) err.remove();
+            });
+        });
     </script>
 
 </x-admin-layout>

@@ -12,7 +12,7 @@
 
     <div class="admin-content">
         <div class="admin-card" style="padding:var(--space-lg);max-width:600px;">
-            <form method="POST" action="{{ route('admin.categories.update', $category) }}">
+            <form method="POST" action="{{ route('admin.categories.update', $category) }}" id="categoryForm" novalidate>
                 @csrf
                 @method('PUT')
 
@@ -48,4 +48,25 @@
             </form>
         </div>
     </div>
+    <script>
+    document.getElementById('categoryForm').addEventListener('submit', function(e) {
+        document.querySelectorAll('.js-error').forEach(el => el.remove());
+
+        const name = document.querySelector('[name="name"]');
+        if (!name.value.trim()) {
+            e.preventDefault();
+            name.style.borderColor = '#CC0008';
+            const msg = document.createElement('p');
+            msg.className = 'form-error js-error';
+            msg.textContent = 'Category name is required.';
+            name.parentNode.appendChild(msg);
+        }
+    });
+
+    document.querySelector('[name="name"]').addEventListener('input', function() {
+        this.style.borderColor = '';
+        const err = this.parentNode.querySelector('.js-error');
+        if (err) err.remove();
+    });
+    </script>
 </x-admin-layout>

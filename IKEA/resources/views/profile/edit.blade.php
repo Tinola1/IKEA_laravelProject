@@ -633,7 +633,78 @@
         @if($errors->userDeletion->isNotEmpty())
             document.getElementById('deleteModal').style.display = 'flex';
         @endif
+        // Profile info form
+    const profileForm = document.querySelector('form[action*="profile.update"]');
+    if (profileForm) {
+        profileForm.addEventListener('submit', function(e) {
+            let valid = true;
+            this.querySelectorAll('.js-error').forEach(el => el.remove());
+
+            const name  = this.querySelector('[name="name"]');
+            const email = this.querySelector('[name="email"]');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!name.value.trim()) {
+                valid = false; showError(name, 'Full name is required.');
+            } else if (name.value.trim().length < 2) {
+                valid = false; showError(name, 'Name must be at least 2 characters.');
+            }
+
+            if (!email.value.trim()) {
+                valid = false; showError(email, 'Email is required.');
+            } else if (!emailRegex.test(email.value.trim())) {
+                valid = false; showError(email, 'Please enter a valid email address.');
+            }
+
+            if (!valid) e.preventDefault();
+        });
+    }
+
+    // Password change form
+    const passwordForm = document.querySelector('form[action*="password.update"]');
+    if (passwordForm) {
+        passwordForm.addEventListener('submit', function(e) {
+            let valid = true;
+            this.querySelectorAll('.js-error').forEach(el => el.remove());
+
+            const current  = this.querySelector('[name="current_password"]');
+            const password = this.querySelector('[name="password"]');
+            const confirm  = this.querySelector('[name="password_confirmation"]');
+
+            if (!current.value) {
+                valid = false; showError(current, 'Current password is required.');
+            }
+            if (!password.value) {
+                valid = false; showError(password, 'New password is required.');
+            } else if (password.value.length < 8) {
+                valid = false; showError(password, 'Password must be at least 8 characters.');
+            }
+            if (!confirm.value) {
+                valid = false; showError(confirm, 'Please confirm your new password.');
+            } else if (confirm.value !== password.value) {
+                valid = false; showError(confirm, 'Passwords do not match.');
+            }
+
+            if (!valid) e.preventDefault();
+        });
+    }
+
+    function showError(input, message) {
+        input.style.borderColor = '#CC0008';
+        const msg = document.createElement('p');
+        msg.className = 'js-error';
+        msg.style.cssText = 'color:#CC0008;font-size:12px;margin-top:4px;font-weight:600;';
+        msg.textContent = message;
+        input.parentNode.appendChild(msg);
+    }
+
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', function() {
+            this.style.borderColor = '';
+            const err = this.parentNode.querySelector('.js-error');
+            if (err) err.remove();
+        });
+    });
     </script>
     @endpush
-
 </x-app-layout>

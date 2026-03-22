@@ -101,7 +101,7 @@
                     Update Appointment
                 </h3>
 
-                <form method="POST" action="{{ route('admin.appointments.update', $appointment) }}">
+                <form method="POST" action="{{ route('admin.appointments.update', $appointment) }}" id="apptUpdateForm">
                     @csrf
                     @method('PATCH')
 
@@ -397,5 +397,18 @@
             .appt-info-grid { grid-template-columns:1fr; }
         }
     </style>
-
+    <script>
+    document.getElementById('apptUpdateForm').addEventListener('submit', function(e) {
+        const status = this.querySelector('[name="status"]');
+        if (!status.value) {
+            e.preventDefault();
+            status.style.borderColor = '#CC0008';
+            const msg = document.createElement('p');
+            msg.className = 'js-error';
+            msg.style.cssText = 'color:#CC0008;font-size:12px;margin-top:4px;font-weight:600;';
+            msg.textContent = 'Please select a status.';
+            status.parentNode.appendChild(msg);
+        }
+    });
+    </script>
 </x-app-layout>
