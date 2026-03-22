@@ -126,8 +126,8 @@
                         <h3>Bedroom<br>Collection</h3>
                         <span class="link">Explore now →</span>
                     </a>
-                    <a href="#" class="promo-card yellow">
-                        <div class="promo-bg-shape" style="background:#000;opacity:0.05;" aria-hidden="true"></div>
+<a href="{{ route('appointments.create') }}" class="promo-card yellow">                      
+      <div class="promo-bg-shape" style="background:#000;opacity:0.05;" aria-hidden="true"></div>
                         <div class="label" style="color:rgba(0,0,0,0.5);">Book Today</div>
                         <h3>Visit Our<br>Showroom</h3>
                         <span class="link">Book appointment →</span>

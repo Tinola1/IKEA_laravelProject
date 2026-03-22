@@ -14,6 +14,9 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\AuditLogController as AdminAuditLogController;
+use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
+use App\Http\Controllers\Admin\InStoreSaleController;
 
 // ── Public routes ────────────────────────────────────────────────
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -66,6 +69,13 @@ Route::middleware('auth')->group(function () {
         return $pdf->download($filename);
     })->name('orders.receipt');
 
+    // ── Showroom Appointments (customer) ─────────────────────────
+    Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index');
+    Route::get('/appointments/book', [AppointmentController::class, 'create'])->name('appointments.create');
+    Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
+    Route::get('/appointments/{appointment}', [AppointmentController::class, 'show'])->name('appointments.show');
+    Route::patch('/appointments/{appointment}/cancel', [AppointmentController::class, 'cancel'])->name('appointments.cancel');
+
 });
 
 // ── Admin routes ─────────────────────────────────────────────────
@@ -78,7 +88,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::post('categories/bulk-destroy', [CategoryController::class, 'bulkDestroy'])->name('categories.bulk-destroy');
     Route::resource('categories', CategoryController::class)->except(['show']);
 
-    // Products — specific routes BEFORE resource to avoid slug conflicts
+    // Products
     Route::post('products/bulk-destroy', [ProductController::class, 'bulkDestroy'])->name('products.bulk-destroy');
     Route::post('products/preview', [ProductController::class, 'import'])->name('products.import');
     Route::post('products/confirm', [ProductController::class, 'confirmImport'])->name('products.confirm');
@@ -102,6 +112,16 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 
     // Audit logs
     Route::get('audit-logs', [AdminAuditLogController::class, 'index'])->name('audit-logs.index');
+
+    // ── Showroom Appointments (admin/staff) ───────────────────────
+    Route::get('appointments', [AdminAppointmentController::class, 'index'])->name('appointments.index');
+    Route::get('appointments/{appointment}', [AdminAppointmentController::class, 'show'])->name('appointments.show');
+    Route::patch('appointments/{appointment}', [AdminAppointmentController::class, 'update'])->name('appointments.update');
+    Route::delete('appointments/{appointment}', [AdminAppointmentController::class, 'destroy'])->name('appointments.destroy');
+
+    // ── In-Store Sales ────────────────────────────────────────────
+    Route::get('sales/create', [InStoreSaleController::class, 'create'])->name('sales.create');
+    Route::post('sales', [InStoreSaleController::class, 'store'])->name('sales.store');
 
 });
 

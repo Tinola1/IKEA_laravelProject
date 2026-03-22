@@ -48,6 +48,22 @@
                 <span class="admin-nav-badge">{{ $pendingOrders }}</span>
             @endif
         </a>
+        <a href="{{ route('admin.sales.create') }}"
+           class="admin-nav-item {{ request()->routeIs('admin.sales.*') ? 'active' : '' }}">
+            <span class="admin-nav-icon">🛒</span>
+            <span>In-Store Sale</span>
+        </a>
+
+        <div class="admin-nav-section-label">Showroom</div>
+        <a href="{{ route('admin.appointments.index') }}"
+           class="admin-nav-item {{ request()->routeIs('admin.appointments.*') ? 'active' : '' }}">
+            <span class="admin-nav-icon">📅</span>
+            <span>Appointments</span>
+            @php $pendingAppts = \App\Models\Appointment::where('status', 'pending')->count(); @endphp
+            @if($pendingAppts > 0)
+                <span class="admin-nav-badge">{{ $pendingAppts }}</span>
+            @endif
+        </a>
 
         <div class="admin-nav-section-label">People</div>
         <a href="{{ route('admin.users.index') }}"
@@ -62,12 +78,13 @@
             <span class="admin-nav-icon">📋</span>
             <span>Audit Logs</span>
         </a>
+
         <div class="admin-nav-section-label">Storefront</div>
-        <a href="{{ route('home') }}"
-        class="admin-nav-item">
+        <a href="{{ route('home') }}" class="admin-nav-item">
             <span class="admin-nav-icon">🏠</span>
             <span>Back to Store</span>
         </a>
+
     </nav>
 
     <div class="admin-sidebar-footer">
@@ -82,16 +99,48 @@
                 </div>
             </div>
         </div>
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="admin-sidebar-logout">Log out</button>
-        </form>
+        <button type="button"
+                onclick="document.getElementById('adminLogoutPopup').style.display='flex'"
+                class="admin-sidebar-logout">
+            Log out
+        </button>
     </div>
 
 </aside>
 
 {{-- Overlay for mobile --}}
 <div class="admin-sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+{{-- ── ADMIN LOGOUT POPUP ───────────────────────────────────────── --}}
+<div id="adminLogoutPopup"
+     onclick="if(event.target===this)this.style.display='none'"
+     style="display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);">
+
+    <div class="logout-popup-box">
+        <div class="logout-popup-icon">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16 17L21 12M21 12L16 7M21 12H9M9 3H7C5.89543 3 5 3.89543 5 5V19C5 20.1046 5.89543 21 7 21H9"
+                      stroke="#FFDB00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <h3 class="logout-popup-title">Log out of IKEA?</h3>
+        <p class="logout-popup-desc">
+            You are about to log out of your IKEA Philippines account.
+            Your cart and orders will still be saved when you log back in.
+        </p>
+        <div class="logout-popup-actions">
+            <button type="button"
+                    onclick="document.getElementById('adminLogoutPopup').style.display='none'"
+                    class="logout-btn-cancel">
+                Cancel
+            </button>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="logout-btn-confirm">Log out</button>
+            </form>
+        </div>
+    </div>
+</div>
 
 <style>
     /* ── SIDEBAR ──────────────────────────────────────────── */
@@ -257,6 +306,81 @@
         border-color: rgba(204,0,8,0.4);
         color: #ff6b6b;
     }
+
+    /* ── LOGOUT POPUP ────────────────────────────────────── */
+    .logout-popup-box {
+        background: #2a2118;
+        border-radius: 16px;
+        padding: 36px 32px 28px;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+        animation: logout-pop 0.2s ease;
+        border: 1px solid rgba(255,255,255,0.08);
+    }
+    @keyframes logout-pop {
+        from { transform: scale(0.92); opacity: 0; }
+        to   { transform: scale(1);    opacity: 1; }
+    }
+    .logout-popup-icon {
+        width: 72px;
+        height: 72px;
+        background: rgba(255,219,0,0.12);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        border: 2px solid rgba(255,219,0,0.25);
+    }
+    .logout-popup-title {
+        font-size: 20px;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 10px;
+        font-family: 'Noto Sans', sans-serif;
+    }
+    .logout-popup-desc {
+        font-size: 14px;
+        color: rgba(255,255,255,0.55);
+        line-height: 1.7;
+        margin-bottom: 28px;
+        font-family: 'Noto Sans', sans-serif;
+    }
+    .logout-popup-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+    .logout-btn-cancel {
+        height: 40px;
+        padding: 0 20px;
+        background: transparent;
+        color: rgba(255,255,255,0.6);
+        border: 1.5px solid rgba(255,255,255,0.15);
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 700;
+        font-family: 'Noto Sans', sans-serif;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+    .logout-btn-cancel:hover { border-color: rgba(255,255,255,0.4); color: white; }
+    .logout-btn-confirm {
+        height: 40px;
+        padding: 0 20px;
+        background: rgba(255,219,0,0.15);
+        color: #FFDB00;
+        border: 1.5px solid rgba(255,219,0,0.4);
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 700;
+        font-family: 'Noto Sans', sans-serif;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+    .logout-btn-confirm:hover { background: #FFDB00; color: #111; border-color: #FFDB00; }
 
     /* ── PUSH CONTENT RIGHT ──────────────────────────────── */
     body.admin-layout .ikea-site-header,
