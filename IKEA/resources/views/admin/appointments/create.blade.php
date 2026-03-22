@@ -10,7 +10,7 @@
     </x-slot>
 
     <div class="appt-page">
-    <form method="POST" action="{{ route('appointments.store') }}" class="appt-layout" id="appointmentForm" novalidate>
+    <form method="POST" action="{{ route('appointments.store') }}" class="appt-layout">
             @csrf
             {{-- ── LEFT COLUMN ─────────────────────────────────── --}}
             <div class="appt-main">
