@@ -10,14 +10,26 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::withCount('orders')
-            ->latest()
-            ->paginate(20);
+        $users = User::withCount('orders')->latest()->paginate(20);
 
         $customerCount = User::whereHas('roles', fn($q) => $q->where('name', 'customer'))->count();
         $staffCount    = User::whereHas('roles', fn($q) => $q->whereIn('name', ['admin', 'staff']))->count();
+        $inactiveCount = User::where('is_active', false)->count();
 
-        return view('admin.users.index', compact('users', 'customerCount', 'staffCount'));
+        return view('admin.users.index', compact('users', 'customerCount', 'staffCount', 'inactiveCount'));
+    }
+
+    public function toggleStatus(User $user)
+    {
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'You cannot deactivate your own account.');
+        }
+
+        $user->update(['is_active' => !$user->is_active]);
+
+        $status = $user->is_active ? 'activated' : 'deactivated';
+
+        return back()->with('success', "{$user->name} has been {$status}.");
     }
 
     public function updateRole(Request $request, User $user)

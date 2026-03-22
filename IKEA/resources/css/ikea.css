@@ -1861,7 +1861,8 @@ input.auth-input:focus {
 .pie-legend-revenue { font-size: 13px; font-weight: 700; color: var(--ikea-dark); text-align: right; }
 .pie-legend-pct { font-size: 13px; font-weight: 900; color: var(--ikea-blue); text-align: right; min-width: 44px; }
 :root { --pie-color-0:#0058A3; --pie-color-1:#FFDB00; --pie-color-2:#2e7d32; --pie-color-3:#f57c00; --pie-color-4:#9c27b0; --pie-color-5:#CC0008; --pie-color-6:#00838f; --pie-color-7:#5d4037; --pie-color-8:#546e7a; }
-
+.btn-status-deactivate { padding: 5px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; background: #fff3e0; color: #f57c00; border: 1px solid #ffe082; cursor: pointer; font-family: 'Noto Sans', sans-serif; }
+.btn-status-activate { padding: 5px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; cursor: pointer; font-family: 'Noto Sans', sans-serif; }
 /* ── USER AVATAR ──────────────────────────────────────── */
 .user-avatar { width: 34px; height: 34px; background: var(--ikea-blue); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 900; flex-shrink: 0; }
 

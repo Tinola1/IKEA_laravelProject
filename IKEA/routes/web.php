@@ -39,7 +39,10 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // ── Authenticated user routes ────────────────────────────────────
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
+
+// For sake of testing, change to below to switch back to AUTHENTICATION
+// Route::middleware(['auth', 'verified'])->group(function () {
 
 // Reviews (customer)
 Route::post('/shop/{product}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
@@ -126,6 +129,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|staff'])
     // Users
     Route::get('users', [AdminUserController::class, 'index'])->name('users.index');
     Route::patch('users/{user}/role', [AdminUserController::class, 'updateRole'])->name('users.role');
+    Route::patch('users/{user}/status', [AdminUserController::class, 'toggleStatus'])->name('users.status');
     Route::delete('users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
 
     // Audit logs
