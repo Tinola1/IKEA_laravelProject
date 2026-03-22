@@ -10,7 +10,7 @@
     </x-slot>
 
     <div class="appt-page">
-    <form method="POST" action="{{ route('appointments.store') }}" class="appt-layout">
+    <form method="POST" action="{{ route('appointments.store') }}" class="appt-layout" id="appointmentForm" novalidate>
             @csrf
             {{-- ── LEFT COLUMN ─────────────────────────────────── --}}
             <div class="appt-main">
@@ -434,6 +434,62 @@
             document.querySelectorAll('.appt-svc').forEach(c => c.classList.remove('is-selected'));
             radio.closest('.appt-svc').classList.add('is-selected');
         }
+    document.getElementById('appointmentForm').addEventListener('submit', function(e) {
+        let valid = true;
+        document.querySelectorAll('.js-error').forEach(el => el.remove());
+        document.querySelectorAll('.appt-input').forEach(el => el.style.borderColor = '');
+
+        const rules = [
+            { name: 'service_type',     label: 'Service type',    select: true },
+            { name: 'appointment_date', label: 'Date',            required: true, futureDate: true },
+            { name: 'appointment_time', label: 'Time slot',       select: true },
+            { name: 'full_name',        label: 'Full name',       required: true, minLength: 2 },
+            { name: 'phone',            label: 'Phone number',    required: true, minLength: 7 },
+            { name: 'email',            label: 'Email address',   required: true, email: true },
+        ];
+
+        rules.forEach(rule => {
+            const input = document.querySelector('[name="' + rule.name + '"]');
+            if (!input) return;
+            const val = input.value.trim();
+            let error = null;
+
+            if ((rule.required || rule.select) && !val) {
+                error = rule.label + ' is required.';
+            } else if (rule.minLength && val.length < rule.minLength) {
+                error = rule.label + ' is too short.';
+            } else if (rule.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+                error = 'Please enter a valid email address.';
+            } else if (rule.futureDate && val) {
+                const selected = new Date(val);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                if (selected <= today) error = 'Please select a future date.';
+            }
+
+            if (error) {
+                valid = false;
+                input.style.borderColor = '#CC0008';
+                const msg = document.createElement('p');
+                msg.className = 'js-error';
+                msg.style.cssText = 'color:#CC0008;font-size:12px;margin-top:4px;font-weight:600;';
+                msg.textContent = error;
+                input.parentNode.appendChild(msg);
+            }
+        });
+
+        if (!valid) e.preventDefault();
+    });
+
+    document.querySelectorAll('.appt-input').forEach(input => {
+        ['input', 'change'].forEach(evt => {
+            input.addEventListener(evt, function() {
+                this.style.borderColor = '';
+                const err = this.parentNode.querySelector('.js-error');
+                if (err) err.remove();
+            });
+        });
+    });
     </script>
     @endpush
 

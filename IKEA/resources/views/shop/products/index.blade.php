@@ -15,21 +15,21 @@
     <div class="shop-page">
 
         {{-- ── FILTER BAR ── --}}
-        <form method="GET" action="{{ route('shop.index') }}" class="shop-filter-bar">
+        <form method="GET" action="{{ route('shop.index') }}" class="shop-filter-bar" id="shopFilterForm">
 
             <div class="shop-filter-inner">
+
+                {{-- Search --}}
                 <div class="filter-search-wrap">
                     <span class="filter-search-icon" aria-hidden="true">🔍</span>
-                    <input
-                        type="text"
-                        name="search"
+                    <input type="text" name="search"
                         value="{{ request('search') }}"
                         placeholder="Search products…"
                         class="filter-search-input"
-                        aria-label="Search products"
-                    >
+                        aria-label="Search products">
                 </div>
 
+                {{-- Category --}}
                 <select name="category" class="filter-select" aria-label="Filter by category">
                     <option value="">All Categories</option>
                     @foreach($categories as $category)
@@ -40,26 +40,70 @@
                     @endforeach
                 </select>
 
+                {{-- Price Range --}}
+                <div class="filter-price-wrap">
+                    <span class="filter-price-label">₱</span>
+                    <input type="number"
+                        name="min_price"
+                        value="{{ request('min_price') }}"
+                        placeholder="{{ number_format($minPrice, 0) }}"
+                        min="0"
+                        class="filter-price-input"
+                        aria-label="Minimum price">
+                    <span class="filter-price-sep">—</span>
+                    <input type="number"
+                        name="max_price"
+                        value="{{ request('max_price') }}"
+                        placeholder="{{ number_format($maxPrice, 0) }}"
+                        min="0"
+                        class="filter-price-input"
+                        aria-label="Maximum price">
+                </div>
+
+                {{-- Sort --}}
+                <select name="sort" class="filter-select" aria-label="Sort by">
+                    <option value="">Latest</option>
+                    <option value="price_asc"  {{ request('sort') === 'price_asc'  ? 'selected' : '' }}>Price: Low → High</option>
+                    <option value="price_desc" {{ request('sort') === 'price_desc' ? 'selected' : '' }}>Price: High → Low</option>
+                    <option value="name_asc"   {{ request('sort') === 'name_asc'   ? 'selected' : '' }}>Name: A → Z</option>
+                </select>
+
                 <div class="filter-actions">
                     <button type="submit" class="filter-btn-apply">Apply</button>
                     <a href="{{ route('shop.index') }}" class="filter-btn-reset">Reset</a>
                 </div>
             </div>
 
-            {{-- Active filter indicator --}}
-            @if(request('search') || request('category'))
+            {{-- Active filter tags --}}
+            @if(request('search') || request('category') || request('min_price') || request('max_price') || request('sort'))
                 <div class="filter-active-bar">
                     <span class="filter-active-label">Filtering by:</span>
+
                     @if(request('search'))
                         <span class="filter-tag">
                             Search: "{{ request('search') }}"
-                            <a href="{{ route('shop.index', array_merge(request()->except('search', 'page'))) }}" aria-label="Remove search filter">×</a>
+                            <a href="{{ route('shop.index', array_merge(request()->except('search','page'))) }}">×</a>
                         </span>
                     @endif
+
                     @if(request('category'))
                         <span class="filter-tag">
                             Category: {{ $categories->firstWhere('id', request('category'))?->name }}
-                            <a href="{{ route('shop.index', array_merge(request()->except('category', 'page'))) }}" aria-label="Remove category filter">×</a>
+                            <a href="{{ route('shop.index', array_merge(request()->except('category','page'))) }}">×</a>
+                        </span>
+                    @endif
+
+                    @if(request('min_price') || request('max_price'))
+                        <span class="filter-tag">
+                            Price: ₱{{ number_format(request('min_price', 0), 0) }} — ₱{{ number_format(request('max_price', $maxPrice), 0) }}
+                            <a href="{{ route('shop.index', array_merge(request()->except('min_price','max_price','page'))) }}">×</a>
+                        </span>
+                    @endif
+
+                    @if(request('sort'))
+                        <span class="filter-tag">
+                            Sort: {{ ['price_asc'=>'Price ↑','price_desc'=>'Price ↓','name_asc'=>'Name A→Z'][request('sort')] ?? '' }}
+                            <a href="{{ route('shop.index', array_merge(request()->except('sort','page'))) }}">×</a>
                         </span>
                     @endif
                 </div>

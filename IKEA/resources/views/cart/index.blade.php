@@ -78,4 +78,44 @@
             @endif
         </div>
     </div>
+    <script>
+    document.querySelectorAll('form[action*="cart.update"], form[action*="cart/update"]').forEach(function(form) {
+        form.addEventListener('submit', function(e) {
+            const input = this.querySelector('[name="quantity"]');
+            const existing = this.querySelector('.js-error');
+            if (existing) existing.remove();
+
+            const val   = parseInt(input.value);
+            const max   = parseInt(input.getAttribute('max')) || 999;
+            let error   = null;
+
+            if (!input.value || isNaN(val)) {
+                error = 'Please enter a quantity.';
+            } else if (val < 1) {
+                error = 'Minimum quantity is 1.';
+            } else if (val > max) {
+                error = 'Only ' + max + ' in stock.';
+            }
+
+            if (error) {
+                e.preventDefault();
+                input.style.borderColor = '#CC0008';
+                const msg = document.createElement('p');
+                msg.className = 'js-error';
+                msg.style.cssText = 'color:#CC0008;font-size:11px;margin-top:3px;font-weight:600;';
+                msg.textContent = error;
+                input.parentNode.appendChild(msg);
+            }
+        });
+
+        const input = form.querySelector('[name="quantity"]');
+        if (input) {
+            input.addEventListener('input', function() {
+                this.style.borderColor = '';
+                const err = this.parentNode.querySelector('.js-error');
+                if (err) err.remove();
+            });
+        }
+    });
+    </script>
 </x-app-layout>

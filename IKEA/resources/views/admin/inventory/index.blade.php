@@ -215,5 +215,33 @@
             }
         </script>
     @endpush
+    <script>
+    document.querySelectorAll('.inline-form').forEach(function(form) {
+        form.addEventListener('submit', function(e) {
+            const input = this.querySelector('[name="stock"]');
+            const existing = this.querySelector('.js-error');
+            if (existing) existing.remove();
 
+            const val = parseInt(input.value);
+            if (input.value === '' || isNaN(val) || val < 0) {
+                e.preventDefault();
+                input.style.borderColor = '#CC0008';
+                const msg = document.createElement('p');
+                msg.className = 'js-error';
+                msg.style.cssText = 'color:#CC0008;font-size:11px;margin-top:3px;font-weight:600;';
+                msg.textContent = 'Must be 0 or more.';
+                input.parentNode.appendChild(msg);
+            }
+        });
+
+        const input = form.querySelector('[name="stock"]');
+        if (input) {
+            input.addEventListener('input', function() {
+                this.style.borderColor = '';
+                const err = this.parentNode.querySelector('.js-error');
+                if (err) err.remove();
+            });
+        }
+    });
+    </script>
 </x-admin-layout>
