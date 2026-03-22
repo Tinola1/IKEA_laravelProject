@@ -21,12 +21,8 @@ class ProfileUpdateRequest extends FormRequest
             // Avatar
             'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
 
-            // Delivery address
-            'phone'    => ['nullable', 'string', 'max:20'],
-            'address'  => ['nullable', 'string', 'max:500'],
-            'city'     => ['nullable', 'string', 'max:100'],
-            'province' => ['nullable', 'string', 'max:100'],
-            'zip_code' => ['nullable', 'string', 'max:10'],
+            // Contact
+            'phone' => ['nullable', 'string', 'max:20'],
 
             // Payment
             'payment_method' => ['nullable', Rule::in(['cod', 'gcash', 'bank_transfer'])],

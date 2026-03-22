@@ -55,68 +55,49 @@
 
                     {{-- Customer info --}}
                     <div class="admin-card" style="padding:var(--space-md);">
-                        <h3 class="admin-section-title">Customer Details</h3>
+                        <h3 class="admin-card-title" style="margin-bottom:var(--space-sm);">Customer Details</h3>
+
+                        {{-- Hidden address defaults for in-store --}}
+                        <input type="hidden" name="address"  value="In-Store Purchase">
+                        <input type="hidden" name="city"     value="Manila">
+                        <input type="hidden" name="province" value="Metro Manila">
+                        <input type="hidden" name="zip_code" value="1000">
 
                         {{-- Existing customer lookup --}}
-                        <div class="profile-field">
-                            <label class="profile-label">Existing Customer (optional)</label>
-                            <select name="user_id" class="admin-input" onchange="fillCustomer(this)">
+                        <div class="form-group">
+                            <label class="form-label">Existing Customer (optional)</label>
+                            <select name="user_id" class="form-input" onchange="fillCustomer(this)">
                                 <option value="">— Walk-in / New Customer —</option>
                                 @foreach($customers as $customer)
                                     <option value="{{ $customer->id }}"
                                             data-name="{{ $customer->name }}"
                                             data-phone="{{ $customer->phone }}"
-                                            data-email="{{ $customer->email }}"
-                                            data-address="{{ $customer->address }}"
-                                            data-city="{{ $customer->city }}"
-                                            data-province="{{ $customer->province }}"
-                                            data-zip="{{ $customer->zip_code }}">
+                                            data-email="{{ $customer->email }}">
                                         {{ $customer->name }} — {{ $customer->email }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
 
-                        <div class="admin-two-col">
-                            <div class="admin-field">
-                                <label class="admin-label">Full Name</label>
-                                <input type="text" name="full_name" id="field_name" class="admin-input" value="{{ old('full_name') }}" required>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Full Name <span class="required">*</span></label>
+                                <input type="text" name="full_name" id="field_name" class="form-input" value="{{ old('full_name') }}" required>
                             </div>
-                            <div class="admin-field">
-                                <label class="admin-label">Phone</label>
-                                <input type="text" name="phone" id="field_phone" class="admin-input" value="{{ old('phone') }}" required>
-                            </div>
-                        </div>
-
-                        <div class="admin-field">
-                            <label class="admin-label">Email (for receipt)</label>
-                            <input type="email" name="email" id="field_email" class="admin-input" value="{{ old('email') }}" placeholder="Optional — leave blank for no email receipt">
-                        </div>
-
-                        <div class="admin-field">
-                            <label class="admin-label">Address</label>
-                            <input type="text" name="address" id="field_address" class="admin-input" value="{{ old('address', 'In-Store Purchase') }}" required>
-                        </div>
-
-                        <div class="admin-two-col">
-                            <div class="admin-field">
-                                <label class="admin-label">City</label>
-                                <input type="text" name="city" id="field_city" class="admin-input" value="{{ old('city', 'Manila') }}" required>
-                            </div>
-                            <div class="admin-field">
-                                <label class="admin-label">Province</label>
-                                <input type="text" name="province" id="field_province" class="admin-input" value="{{ old('province', 'Metro Manila') }}" required>
+                            <div class="form-group">
+                                <label class="form-label">Phone <span class="required">*</span></label>
+                                <input type="text" name="phone" id="field_phone" class="form-input" value="{{ old('phone') }}" required>
                             </div>
                         </div>
 
-                        <div class="admin-two-col">
-                            <div class="admin-field">
-                                <label class="admin-label">ZIP Code</label>
-                                <input type="text" name="zip_code" id="field_zip" class="admin-input" value="{{ old('zip_code', '1000') }}" required>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Email (for receipt)</label>
+                                <input type="email" name="email" id="field_email" class="form-input" value="{{ old('email') }}" placeholder="Optional">
                             </div>
-                            <div class="admin-field">
-                                <label class="admin-label">Payment Method</label>
-                                <select name="payment_method" class="admin-input" required>
+                            <div class="form-group">
+                                <label class="form-label">Payment Method <span class="required">*</span></label>
+                                <select name="payment_method" class="form-input" required>
                                     <option value="cash">Cash</option>
                                     <option value="gcash">GCash</option>
                                     <option value="bank_transfer">Bank Transfer</option>
@@ -125,19 +106,17 @@
                             </div>
                         </div>
 
-                        <div class="admin-field">
-                            <label class="admin-label">Notes (optional)</label>
-                            <input type="text" name="notes" class="admin-input" value="{{ old('notes') }}" placeholder="e.g. showroom visit, appointment #00001">
+                        <div class="form-group">
+                            <label class="form-label">Notes (optional)</label>
+                            <input type="text" name="notes" class="form-input" value="{{ old('notes') }}" placeholder="e.g. showroom visit, appointment #00001">
                         </div>
 
                     </div>
 
-                </div>
-
                 {{-- ── RIGHT SIDEBAR ── --}}
                 <div class="admin-form-sidebar">
                     <div class="admin-card" style="padding:var(--space-md);">
-                        <button type="submit" class="profile-save-btn" onclick="return validateSale()">
+                        <button type="submit" class="profile-save-btn">
                             Process Sale
                         </button>
                         <a href="{{ route('admin.orders.index') }}" class="profile-cancel-link">Cancel</a>
@@ -161,13 +140,17 @@
 
     {{-- Hidden product data for JS --}}
     <script>
-        const allProducts = @json($products->map(fn($p) => [
-            'id'       => $p->id,
-            'name'     => $p->name,
-            'price'    => $p->price,
-            'stock'    => $p->stock,
-            'category' => $p->category?->name ?? '',
-        ]));
+        @php
+            $productJson = $products->map(fn($p) => [
+                'id'       => $p->id,
+                'name'     => $p->name,
+                'price'    => $p->price,
+                'stock'    => $p->stock,
+                'category' => $p->category?->name ?? '',
+            ])->values();
+            @endphp
+
+            const allProducts = {!! json_encode($productJson) !!};
 
         let cartItems = {};
 
@@ -281,22 +264,74 @@
 
         function fillCustomer(select) {
             const opt = select.options[select.selectedIndex];
-            document.getElementById('field_name').value    = opt.dataset.name    || '';
-            document.getElementById('field_phone').value   = opt.dataset.phone   || '';
-            document.getElementById('field_email').value   = opt.dataset.email   || '';
-            document.getElementById('field_address').value = opt.dataset.address || 'In-Store Purchase';
-            document.getElementById('field_city').value    = opt.dataset.city    || 'Manila';
-            document.getElementById('field_province').value= opt.dataset.province|| 'Metro Manila';
-            document.getElementById('field_zip').value     = opt.dataset.zip     || '1000';
+            document.getElementById('field_name').value  = opt.dataset.name  || '';
+            document.getElementById('field_phone').value = opt.dataset.phone || '';
+            document.getElementById('field_email').value = opt.dataset.email || '';
         }
 
-        function validateSale() {
+        document.getElementById('saleForm').addEventListener('submit', function(e) {
+            let valid = true;
+            const errors = {};
+
+            const name    = document.getElementById('field_name');
+            const phone   = document.getElementById('field_phone');
+            const email   = document.getElementById('field_email');
+            const payment = document.querySelector('[name="payment_method"]');
+
+            document.querySelectorAll('.js-error').forEach(el => el.remove());
+
             if (!Object.keys(cartItems).length) {
-                alert('Please add at least one product.');
-                return false;
+                const cartArea = document.getElementById('selectedItems');
+                const msg = document.createElement('p');
+                msg.className = 'form-error js-error';
+                msg.textContent = 'Please add at least one product.';
+                cartArea.parentNode.insertBefore(msg, cartArea);
+                valid = false;
             }
-            return true;
-        }
+
+            if (!name.value.trim()) {
+                errors.full_name = 'Full name is required.';
+                valid = false;
+            }
+
+            if (!phone.value.trim()) {
+                errors.phone = 'Phone number is required.';
+                valid = false;
+            } else if (!/^[0-9+\s\-]{7,20}$/.test(phone.value.trim())) {
+                errors.phone = 'Please enter a valid phone number.';
+                valid = false;
+            }
+
+            if (email.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
+                errors.email = 'Please enter a valid email address.';
+                valid = false;
+            }
+
+            if (!payment.value) {
+                errors.payment_method = 'Please select a payment method.';
+                valid = false;
+            }
+
+            Object.keys(errors).forEach(field => {
+                const input = document.querySelector('[name="' + field + '"]');
+                if (!input) return;
+                const msg = document.createElement('p');
+                msg.className = 'form-error js-error';
+                msg.textContent = errors[field];
+                input.parentNode.appendChild(msg);
+                input.style.borderColor = '#CC0008';
+            });
+
+            if (!valid) e.preventDefault();
+        });
+
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('input', function() {
+                this.style.borderColor = '';
+                const err = this.parentNode.querySelector('.js-error');
+                if (err) err.remove();
+            });
+        });
 
         // Close dropdown on outside click
         document.addEventListener('click', function(e) {

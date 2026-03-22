@@ -33,35 +33,68 @@
                                        placeholder="+63 912 345 6789">
                                 @error('phone')<p class="form-error">{{ $message }}</p>@enderror
                             </div>
-                        </div>
-                        <div class="checkout-field">
-                            <label class="checkout-label">Street Address <span style="color:#CC0008;">*</span></label>
-                            <input type="text" name="address" class="checkout-input"
-                                   value="{{ old('address', auth()->user()->address) }}">
-                            @error('address')<p class="form-error">{{ $message }}</p>@enderror
-                        </div>
-                        <div class="checkout-grid-2">
-                            <div class="checkout-field">
-                                <label class="checkout-label">City <span style="color:#CC0008;">*</span></label>
-                                <input type="text" name="city" class="checkout-input"
-                                       value="{{ old('city', auth()->user()->city) }}">
-                                @error('city')<p class="form-error">{{ $message }}</p>@enderror
-                            </div>
-                            <div class="checkout-field">
-                                <label class="checkout-label">Province <span style="color:#CC0008;">*</span></label>
-                                <input type="text" name="province" class="checkout-input"
-                                       value="{{ old('province', auth()->user()->province) }}">
-                                @error('province')<p class="form-error">{{ $message }}</p>@enderror
-                            </div>
-                        </div>
-                        <div class="checkout-grid-2">
-                            <div class="checkout-field">
-                                <label class="checkout-label">ZIP Code <span style="color:#CC0008;">*</span></label>
-                                <input type="text" name="zip_code" class="checkout-input"
-                                       value="{{ old('zip_code', auth()->user()->zip_code) }}">
-                                @error('zip_code')<p class="form-error">{{ $message }}</p>@enderror
-                            </div>
-                        </div>
+                        @php $addresses = Auth::user()->addresses()->get(); @endphp
+                            @if($addresses->count())
+                                <div class="form-group">
+                                    <label class="form-label">Delivery Address <span class="required">*</span></label>
+                                    @foreach($addresses as $addr)
+                                        <label class="address-pick-option {{ $addr->is_default ? 'selected' : '' }}" id="addrOption{{ $addr->id }}">
+                                            <input type="radio" name="address_id" value="{{ $addr->id }}"
+                                                {{ $addr->is_default ? 'checked' : '' }}
+                                                onchange="selectAddress({{ $addr->id }})">
+                                            <div>
+                                                <span style="font-weight:700;">{{ $addr->label }}</span>
+                                                @if($addr->is_default)<span class="address-badge-default">Default</span>@endif
+                                                <div style="font-size:13px;margin-top:2px;">{{ $addr->full_name }} · {{ $addr->phone }}</div>
+                                                <div style="font-size:13px;color:var(--ikea-gray);">{{ $addr->oneLiner() }}</div>
+                                            </div>
+                                        </label>
+                                    @endforeach
+                                    <a href="{{ route('profile.edit') }}#address-book" class="address-btn-link" style="display:inline-block;margin-top:8px;">+ Add new address</a>
+                                </div>
+
+                                {{-- Hidden fields populated by JS from selected address --}}
+                                <input type="hidden" name="full_name" id="co_full_name" value="{{ $addresses->firstWhere('is_default', true)?->full_name ?? $addresses->first()->full_name }}">
+                                <input type="hidden" name="phone"     id="co_phone"     value="{{ $addresses->firstWhere('is_default', true)?->phone ?? $addresses->first()->phone }}">
+                                <input type="hidden" name="address"   id="co_address"   value="{{ $addresses->firstWhere('is_default', true)?->address ?? $addresses->first()->address }}">
+                                <input type="hidden" name="city"      id="co_city"      value="{{ $addresses->firstWhere('is_default', true)?->city ?? $addresses->first()->city }}">
+                                <input type="hidden" name="province"  id="co_province"  value="{{ $addresses->firstWhere('is_default', true)?->province ?? $addresses->first()->province }}">
+                                <input type="hidden" name="zip_code"  id="co_zip_code"  value="{{ $addresses->firstWhere('is_default', true)?->zip_code ?? $addresses->first()->zip_code }}">
+
+                                @php $addrJson = $addresses->keyBy('id')->map(fn($a) => [
+                                    'full_name' => $a->full_name, 'phone' => $a->phone,
+                                    'address'   => $a->address,  'city'  => $a->city,
+                                    'province'  => $a->province, 'zip_code' => $a->zip_code,
+                                ])->toArray(); @endphp
+
+                                <script>
+                                const savedAddresses = @json($addrJson);
+                                function selectAddress(id) {
+                                    const a = savedAddresses[id];
+                                    if (!a) return;
+                                    document.getElementById('co_full_name').value = a.full_name;
+                                    document.getElementById('co_phone').value     = a.phone;
+                                    document.getElementById('co_address').value   = a.address;
+                                    document.getElementById('co_city').value      = a.city;
+                                    document.getElementById('co_province').value  = a.province;
+                                    document.getElementById('co_zip_code').value  = a.zip_code;
+                                    document.querySelectorAll('.address-pick-option').forEach(el => el.classList.remove('selected'));
+                                    document.getElementById('addrOption' + id).classList.add('selected');
+                                }
+                                </script>
+
+                                <style>
+                                .address-pick-option { display:flex;gap:12px;align-items:flex-start;border:1.5px solid var(--ikea-border);border-radius:8px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:border-color .15s; }
+                                .address-pick-option.selected { border-color:var(--ikea-blue);background:#f0f6ff; }
+                                .address-pick-option input[type=radio] { margin-top:3px;flex-shrink:0;accent-color:var(--ikea-blue); }
+                                </style>
+                            @else
+                                {{-- No saved addresses — fall back to manual entry and nudge them to save one --}}
+                                <div class="admin-flash" style="background:#fff3e0;border-left:4px solid #f57c00;margin-bottom:var(--space-sm);">
+                                    You have no saved addresses. <a href="{{ route('profile.edit') }}" style="color:var(--ikea-blue);font-weight:700;">Add one in your profile</a> to speed up future checkouts.
+                                </div>
+                                {{-- keep existing manual address inputs here unchanged --}}
+                            @endif
                         <div class="checkout-field" style="margin-top:4px;">
                             <label class="checkout-label">Order Notes <span style="color:var(--ikea-gray);font-weight:400;">(optional)</span></label>
                             <textarea name="notes" rows="2" class="checkout-input"

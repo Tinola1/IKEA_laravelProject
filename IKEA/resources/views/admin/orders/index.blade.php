@@ -120,7 +120,7 @@
                                 <div class="table-customer-name">{{ $order->user->name }}</div>
                                 <div class="table-customer-email">{{ $order->user->email }}</div>
                             </td>
-                            <td class="order-date">{{ $order->created_at->format('M d, Y') }}</td>
+                            <td class="order-date">{{ $order->created_at->format('M d, Y g:i A') }}</td>
                             <td class="order-total">₱{{ number_format($order->total, 0) }}</td>
                             <td>
                                 <span class="order-status-badge {{ $order->payment_status === 'paid' ? 'status-completed' : 'status-cancelled' }}">
@@ -158,7 +158,10 @@
                     stateSave: true,
                     lengthMenu: [[15, 25, 50, -1], [15, 25, 50, 'All']],
                     order: [[0, 'desc']],
-                    columnDefs: [{ orderable: false, targets: [6] }],
+                    columnDefs: [
+                        { orderable: false, targets: [6] },
+                        { type: 'num', targets: [0], render: d => d.replace('#','') },
+                    ],
                     language: {
                         search: 'Search orders:',
                         lengthMenu: 'Show _MENU_ orders',

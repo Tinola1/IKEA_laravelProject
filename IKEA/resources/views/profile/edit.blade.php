@@ -355,6 +355,103 @@
 
     </div>
 
+    {{-- ── ADDRESS BOOK ──────────────────────────────── --}}
+    <div class="admin-card profile-card">
+        <h3 class="profile-section-title">Address Book</h3>
+
+        @if(session('status') === 'address-added')
+            <div class="profile-flash success">✅ Address added.</div>
+        @endif
+        @if(session('status') === 'address-updated')
+            <div class="profile-flash success">✅ Address updated.</div>
+        @endif
+        @if(session('status') === 'address-deleted')
+            <div class="profile-flash success">✅ Address removed.</div>
+        @endif
+
+        {{-- Existing addresses --}}
+        @forelse($addresses as $addr)
+            <div class="address-card {{ $addr->is_default ? 'address-card--default' : '' }}">
+                <div class="address-card-header">
+                    <span class="address-label">{{ $addr->label }}</span>
+                    @if($addr->is_default)
+                        <span class="address-badge-default">Default</span>
+                    @endif
+                </div>
+                <div class="address-card-body">
+                    <div class="address-name">{{ $addr->full_name }} · {{ $addr->phone }}</div>
+                    <div class="address-text">{{ $addr->oneLiner() }}</div>
+                </div>
+                <div class="address-card-actions">
+                    @if(!$addr->is_default)
+                        <form method="POST" action="{{ route('addresses.default', $addr) }}" style="display:inline;">
+                            @csrf @method('PATCH')
+                            <button type="submit" class="address-btn-link">Set as default</button>
+                        </form>
+                    @endif
+                    <button type="button" class="address-btn-link"
+                            onclick="openEditAddress({{ $addr->id }}, '{{ addslashes($addr->label) }}', '{{ addslashes($addr->full_name) }}', '{{ addslashes($addr->phone) }}', '{{ addslashes($addr->address) }}', '{{ addslashes($addr->city) }}', '{{ addslashes($addr->province) }}', '{{ addslashes($addr->zip_code) }}', {{ $addr->is_default ? 'true' : 'false' }})">
+                        Edit
+                    </button>
+                    <form method="POST" action="{{ route('addresses.destroy', $addr) }}" style="display:inline;"
+                        onsubmit="return confirm('Remove this address?')">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="address-btn-danger">Remove</button>
+                    </form>
+                </div>
+            </div>
+        @empty
+            <p style="font-size:13px;color:var(--ikea-gray);margin-bottom:var(--space-sm);">No saved addresses yet.</p>
+        @endforelse
+
+        {{-- Add new address button --}}
+        <button type="button" class="admin-btn-secondary" style="margin-top:var(--space-sm);"
+                onclick="document.getElementById('addAddressForm').style.display = document.getElementById('addAddressForm').style.display === 'none' ? 'block' : 'none'">
+            + Add New Address
+        </button>
+
+        {{-- Add form (hidden by default) --}}
+        <div id="addAddressForm" style="display:none;margin-top:var(--space-sm);">
+            <form method="POST" action="{{ route('addresses.store') }}">
+                @csrf
+                @include('profile.partials.address-form')
+                <button type="submit" class="admin-btn-primary" style="margin-top:var(--space-sm);">Save Address</button>
+            </form>
+        </div>
+    </div>
+
+    {{-- Edit address modal --}}
+    <div id="editAddressModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;align-items:center;justify-content:center;">
+        <div style="background:var(--ikea-white);border-radius:12px;padding:28px;width:100%;max-width:480px;margin:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                <h3 style="font-size:16px;font-weight:700;margin:0;">Edit Address</h3>
+                <button type="button" onclick="document.getElementById('editAddressModal').style.display='none'"
+                        style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--ikea-gray);">×</button>
+            </div>
+            <form method="POST" id="editAddressForm" action="">
+                @csrf @method('PATCH')
+                @include('profile.partials.address-form', ['editing' => true])
+                <button type="submit" class="admin-btn-primary" style="margin-top:var(--space-sm);width:100%;">Update Address</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    function openEditAddress(id, label, fullName, phone, address, city, province, zipCode, isDefault) {
+        const form = document.getElementById('editAddressForm');
+        form.action = '/addresses/' + id;
+        form.querySelector('[name="label"]').value      = label;
+        form.querySelector('[name="full_name"]').value  = fullName;
+        form.querySelector('[name="phone"]').value      = phone;
+        form.querySelector('[name="address"]').value    = address;
+        form.querySelector('[name="city"]').value       = city;
+        form.querySelector('[name="province"]').value   = province;
+        form.querySelector('[name="zip_code"]').value   = zipCode;
+        form.querySelector('[name="is_default"]').checked = isDefault;
+        document.getElementById('editAddressModal').style.display = 'flex';
+    }
+    </script>
+
     {{-- ── DELETE ACCOUNT MODAL ─────────────────────────────────────── --}}
     <div id="deleteModal" class="profile-modal-overlay" style="display:none;">
         <div class="profile-modal">

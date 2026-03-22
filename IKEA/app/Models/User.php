@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use App\Models\UserAddress;
 
 class User extends Authenticatable //implements MustVerifyEmail
 {
@@ -19,10 +20,6 @@ class User extends Authenticatable //implements MustVerifyEmail
         'is_active',
         'avatar',
         'phone',
-        'address',
-        'city',
-        'province',
-        'zip_code',
         'payment_method',
     ];
 
@@ -61,6 +58,16 @@ class User extends Authenticatable //implements MustVerifyEmail
 
     public function hasCompleteAddress(): bool
     {
-        return $this->address && $this->city && $this->province && $this->zip_code;
+        return $this->addresses()->where('is_default', true)->exists();
+    }
+    
+    public function addresses()
+    {
+        return $this->hasMany(UserAddress::class)->orderByDesc('is_default')->orderBy('created_at');
+    }
+
+    public function defaultAddress(): ?UserAddress
+    {
+        return $this->addresses()->where('is_default', true)->first();
     }
 }

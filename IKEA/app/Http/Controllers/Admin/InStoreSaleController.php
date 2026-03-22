@@ -25,7 +25,7 @@ class InStoreSaleController extends Controller
 
         $customers = User::whereHas('roles', fn($q) => $q->where('name', 'customer'))
             ->orderBy('name')
-            ->get(['id', 'name', 'email', 'phone', 'address', 'city', 'province', 'zip_code']);
+            ->get(['id', 'name', 'email', 'phone']);
 
         return view('admin.sales.create', compact('products', 'customers'));
     }
@@ -36,16 +36,10 @@ class InStoreSaleController extends Controller
             'full_name'      => 'required|string|max:255',
             'phone'          => 'required|string|max:20',
             'email'          => 'nullable|email|max:255',
-            'address'        => 'required|string|max:500',
-            'city'           => 'required|string|max:100',
-            'province'       => 'required|string|max:100',
-            'zip_code'       => 'required|string|max:10',
-            'payment_method' => 'required|in:cod,gcash,bank_transfer,cash',
-            'notes'          => 'nullable|string|max:500',
-            'products'       => 'required|array|min:1',
-            'products.*.id'  => 'required|exists:products,id',
-            'products.*.qty' => 'required|integer|min:1',
-            'user_id'        => 'nullable|exists:users,id',
+            'address'        => 'nullable|string|max:500',
+            'city'           => 'nullable|string|max:100',
+            'province'       => 'nullable|string|max:100',
+            'zip_code'       => 'nullable|string|max:10',
         ]);
 
         $order = null;
@@ -80,10 +74,10 @@ class InStoreSaleController extends Controller
                 'payment_status' => 'paid',        // in-store = paid on the spot
                 'full_name'      => $request->full_name,
                 'phone'          => $request->phone,
-                'address'        => $request->address,
-                'city'           => $request->city,
-                'province'       => $request->province,
-                'zip_code'       => $request->zip_code,
+                'address'        => 'In-Store Purchase',
+                'city'           => '—',
+                'province'       => '—',
+                'zip_code'       => '—',
                 'notes'          => '[IN-STORE SALE] ' . $request->notes,
             ]);
 

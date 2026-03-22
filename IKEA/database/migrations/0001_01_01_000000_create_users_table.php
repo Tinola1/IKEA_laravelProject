@@ -20,10 +20,6 @@ return new class extends Migration
             $table->string('password');
             $table->string('avatar')->nullable();
             $table->string('phone')->nullable();
-            $table->string('address')->nullable();
-            $table->string('city')->nullable();
-            $table->string('province')->nullable();
-            $table->string('zip_code')->nullable();
             $table->enum('payment_method', ['cod', 'gcash', 'bank_transfer'])->nullable();
             $table->rememberToken();
             $table->timestamps();

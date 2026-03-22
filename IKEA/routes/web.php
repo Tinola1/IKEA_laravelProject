@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentControll
 use App\Http\Controllers\Admin\InStoreSaleController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
+use App\Http\Controllers\AddressController;
 
 
 // ── Public routes ────────────────────────────────────────────────
@@ -44,11 +45,16 @@ Route::middleware(['auth'])->group(function () {
 // For sake of testing, change to below to switch back to AUTHENTICATION
 // Route::middleware(['auth', 'verified'])->group(function () {
 
-// Reviews (customer)
-Route::post('/shop/{product}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
-Route::patch('/shop/{product}/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
-Route::delete('/shop/{product}/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+    // Reviews (customer)
+    Route::post('/shop/{product}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+    Route::patch('/shop/{product}/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
+    Route::delete('/shop/{product}/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
 
+    // Address book
+    Route::post('/addresses', [AddressController::class, 'store'])->name('addresses.store');
+    Route::patch('/addresses/{address}', [AddressController::class, 'update'])->name('addresses.update');
+    Route::delete('/addresses/{address}', [AddressController::class, 'destroy'])->name('addresses.destroy');
+    Route::patch('/addresses/{address}/default', [AddressController::class, 'setDefault'])->name('addresses.default');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
