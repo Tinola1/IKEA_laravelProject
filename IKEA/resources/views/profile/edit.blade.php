@@ -109,60 +109,6 @@
                     </div>
                 </div>
 
-                {{-- ── DELIVERY ADDRESS ────────────────────────────── --}}
-                <div class="admin-card profile-card">
-                    <h3 class="profile-section-title">
-                        Delivery Address
-                        @if($user->hasCompleteAddress())
-                            <span class="profile-badge-complete">✓ Complete</span>
-                        @else
-                            <span class="profile-badge-incomplete">Incomplete</span>
-                        @endif
-                    </h3>
-                    <p class="profile-section-hint">
-                        This address will be pre-filled at checkout to save you time.
-                    </p>
-
-                    <div class="profile-field">
-                        <label class="profile-label" for="address">Street Address</label>
-                        <input id="address" name="address" type="text"
-                               class="profile-input @error('address') is-error @enderror"
-                               value="{{ old('address', $user->address) }}"
-                               placeholder="e.g. 123 Rizal Street, Barangay San Antonio">
-                        @error('address')<span class="profile-error">{{ $message }}</span>@enderror
-                    </div>
-
-                    <div class="profile-three-col">
-                        <div class="profile-field">
-                            <label class="profile-label" for="city">City / Municipality</label>
-                            <input id="city" name="city" type="text"
-                                   class="profile-input @error('city') is-error @enderror"
-                                   value="{{ old('city', $user->city) }}"
-                                   placeholder="e.g. Quezon City">
-                            @error('city')<span class="profile-error">{{ $message }}</span>@enderror
-                        </div>
-
-                        <div class="profile-field">
-                            <label class="profile-label" for="province">Province</label>
-                            <input id="province" name="province" type="text"
-                                   class="profile-input @error('province') is-error @enderror"
-                                   value="{{ old('province', $user->province) }}"
-                                   placeholder="e.g. Metro Manila">
-                            @error('province')<span class="profile-error">{{ $message }}</span>@enderror
-                        </div>
-
-                        <div class="profile-field">
-                            <label class="profile-label" for="zip_code">ZIP Code</label>
-                            <input id="zip_code" name="zip_code" type="text"
-                                   class="profile-input @error('zip_code') is-error @enderror"
-                                   value="{{ old('zip_code', $user->zip_code) }}"
-                                   placeholder="e.g. 1100"
-                                   maxlength="10">
-                            @error('zip_code')<span class="profile-error">{{ $message }}</span>@enderror
-                        </div>
-                    </div>
-                </div>
-
                 {{-- ── PAYMENT PREFERENCE ──────────────────────────── --}}
                 <div class="admin-card profile-card">
                     <h3 class="profile-section-title">Preferred Payment Method</h3>

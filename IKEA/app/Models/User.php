@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use App\Models\UserAddress;
 
-class User extends Authenticatable implements MustVerifyEmail//implements MustVerifyEmail
+class User extends Authenticatable implements MustVerifyEmail //remove if thoust want to bypass authentication, implements MustVerifyEmail
 {
     use HasFactory, Notifiable, HasRoles;
 

@@ -22,13 +22,13 @@
                         <div class="checkout-grid-2">
                             <div class="checkout-field">
                                 <label class="checkout-label">Full Name <span style="color:#CC0008;">*</span></label>
-                                <input type="text" name="full_name" class="checkout-input"
+                                <input type="text" name="full_name" id="co_full_name" class="checkout-input"
                                        value="{{ old('full_name', auth()->user()->name) }}">
                                 @error('full_name')<p class="form-error">{{ $message }}</p>@enderror
                             </div>
                             <div class="checkout-field">
                                 <label class="checkout-label">Phone Number <span style="color:#CC0008;">*</span></label>
-                                <input type="text" name="phone" class="checkout-input"
+                                <input type="text" name="phone" id="co_phone" class="checkout-input"
                                        value="{{ old('phone', auth()->user()->phone) }}"
                                        placeholder="+63 912 345 6789">
                                 @error('phone')<p class="form-error">{{ $message }}</p>@enderror
@@ -54,8 +54,6 @@
                                 </div>
 
                                 {{-- Hidden fields populated by JS from selected address --}}
-                                <input type="hidden" name="full_name" id="co_full_name" value="{{ $addresses->firstWhere('is_default', true)?->full_name ?? $addresses->first()->full_name }}">
-                                <input type="hidden" name="phone"     id="co_phone"     value="{{ $addresses->firstWhere('is_default', true)?->phone ?? $addresses->first()->phone }}">
                                 <input type="hidden" name="address"   id="co_address"   value="{{ $addresses->firstWhere('is_default', true)?->address ?? $addresses->first()->address }}">
                                 <input type="hidden" name="city"      id="co_city"      value="{{ $addresses->firstWhere('is_default', true)?->city ?? $addresses->first()->city }}">
                                 <input type="hidden" name="province"  id="co_province"  value="{{ $addresses->firstWhere('is_default', true)?->province ?? $addresses->first()->province }}">
