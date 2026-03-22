@@ -2082,3 +2082,37 @@ input.auth-input:focus {
             .appt-form-grid { grid-template-columns:1fr; }
             .appt-info-grid { grid-template-columns:1fr; }
         }
+
+        /* ── SHOP PRICE FILTER ────────────────────────────────── */
+.filter-price-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+.filter-price-label {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--ikea-gray);
+}
+.filter-price-sep {
+    font-size: var(--text-sm);
+    color: var(--ikea-gray);
+}
+.filter-price-input {
+    width: 90px;
+    height: 44px;
+    padding: 0 10px;
+    border: 1.5px solid var(--ikea-border);
+    border-radius: 8px;
+    font-size: var(--text-sm);
+    font-family: 'Noto Sans', sans-serif;
+    color: var(--ikea-dark);
+    background: white;
+    transition: border-color var(--transition-fast);
+}
+.filter-price-input:focus {
+    outline: none;
+    border-color: var(--ikea-blue);
+}
+.filter-price-input::placeholder { color: var(--ikea-gray); }
