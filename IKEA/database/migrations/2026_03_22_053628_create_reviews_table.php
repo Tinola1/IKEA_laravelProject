@@ -12,9 +12,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
-            $table->unsignedTinyInteger('rating'); // 1–5
+            $table->unsignedTinyInteger('rating');
             $table->string('title')->nullable();
             $table->text('body')->nullable();
+            $table->softDeletes();
             $table->timestamps();
 
             // One review per customer per product

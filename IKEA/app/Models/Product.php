@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Searchable;
 
 class Product extends Model
 {
-    use Searchable;
+    use Searchable, SoftDeletes;
 
     protected $fillable = [
         'category_id', 'name', 'slug', 'description',
@@ -17,6 +18,11 @@ class Product extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function productImages()
+    {
+        return $this->hasMany(ProductImage::class);
     }
 
     public function reviews()
@@ -29,7 +35,6 @@ class Product extends Model
         return round($this->reviews()->avg('rating') ?? 0, 1);
     }
 
-    // ── Scout ─────────────────────────────────────────────────────
     public function toSearchableArray(): array
     {
         return [

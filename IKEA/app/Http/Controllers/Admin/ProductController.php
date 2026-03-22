@@ -147,6 +147,7 @@ class ProductController extends Controller
         $image->delete();
         return back()->with('success', 'Image removed.');
     }
+
     public function bulkDestroy(Request $request)
     {
         $ids = explode(',', $request->input('ids', ''));
@@ -250,5 +251,31 @@ class ProductController extends Controller
     public function downloadTemplate()
     {
         return Excel::download(new ProductsTemplateExport(), 'products_template.xlsx');
+    }
+
+    public function trashed()
+    {
+        $products = Product::onlyTrashed()->with('category')->latest()->get();
+        return view('admin.products.trashed', compact('products'));
+    }
+
+    public function restore($id)
+    {
+        $product = Product::onlyTrashed()->findOrFail($id);
+        $product->restore();
+        return redirect()->route('admin.products.trashed')
+            ->with('success', "{$product->name} has been restored.");
+    }
+
+    public function forceDelete($id)
+    {
+        $product = Product::onlyTrashed()->findOrFail($id);
+        if ($product->image) Storage::disk('public')->delete($product->image);
+        foreach ($product->productImages as $img) {
+            Storage::disk('public')->delete($img->path);
+        }
+        $product->forceDelete();
+        return redirect()->route('admin.products.trashed')
+            ->with('success', 'Product permanently deleted.');
     }
 }

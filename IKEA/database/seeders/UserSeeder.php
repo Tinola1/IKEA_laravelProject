@@ -11,23 +11,78 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $users = [
+            // ── Staff accounts ─────────────────────────────────────
             [
                 'name'     => 'IKEA Admin',
                 'email'    => 'admin@ikea.ph',
                 'password' => 'admin1234',
                 'role'     => 'admin',
+                'email_verified_at' => now(),
             ],
             [
                 'name'     => 'IKEA Staff',
                 'email'    => 'staff@ikea.ph',
                 'password' => 'staff1234',
                 'role'     => 'staff',
+                'email_verified_at' => now(),
             ],
+
+            // ── Demo customer accounts ─────────────────────────────
+            // user1 — demonstrates the Shop & Cart
             [
-                'name'     => 'Test Customer',
-                'email'    => 'customer@ikea.ph',
-                'password' => 'customer1234',
-                'role'     => 'customer',
+                'name'              => 'Shop Demo User',
+                'email'             => 'user1@mail.com',
+                'password'          => 'password123',
+                'role'              => 'customer',
+                'email_verified_at' => now(),
+                'phone'             => '09171111111',
+                'address'           => '1 Ayala Avenue, Brgy. San Lorenzo',
+                'city'              => 'Makati',
+                'province'          => 'Metro Manila',
+                'zip_code'          => '1226',
+                'payment_method'    => 'gcash',
+            ],
+            // user2 — demonstrates Orders & Checkout
+            [
+                'name'              => 'Orders Demo User',
+                'email'             => 'user2@mail.com',
+                'password'          => 'password123',
+                'role'              => 'customer',
+                'email_verified_at' => now(),
+                'phone'             => '09282222222',
+                'address'           => '2 EDSA, Brgy. Wack-Wack',
+                'city'              => 'Mandaluyong',
+                'province'          => 'Metro Manila',
+                'zip_code'          => '1550',
+                'payment_method'    => 'cod',
+            ],
+            // user3 — demonstrates Reviews & Product Pages
+            [
+                'name'              => 'Reviews Demo User',
+                'email'             => 'user3@mail.com',
+                'password'          => 'password123',
+                'role'              => 'customer',
+                'email_verified_at' => now(),
+                'phone'             => '09393333333',
+                'address'           => '3 Taft Avenue, Brgy. Malate',
+                'city'              => 'Manila',
+                'province'          => 'Metro Manila',
+                'zip_code'          => '1004',
+                'payment_method'    => 'bank_transfer',
+            ],
+            // user4 — demonstrates Appointments & Profile
+            [
+                'name'              => 'Appointments Demo User',
+                'email'             => 'user4@mail.com',
+                'password'          => 'password123',
+                'role'              => 'customer',
+                'email_verified_at' => now(),
+                'phone'             => '09504444444',
+                'address'           => '4 Katipunan Avenue, Brgy. Loyola Heights',
+                'city'              => 'Quezon City',
+                'province'          => 'Metro Manila',
+                'zip_code'          => '1108',
+                'payment_method'    => 'gcash',
             ],
         ];
 
@@ -35,27 +90,32 @@ class UserSeeder extends Seeder
             $user = User::firstOrCreate(
                 ['email' => $data['email']],
                 [
-                    'name'     => $data['name'],
-                    'password' => Hash::make($data['password']),
+                    'name'              => $data['name'],
+                    'password'          => Hash::make($data['password']),
+                    'email_verified_at' => $data['email_verified_at'],
+                    'phone'             => $data['phone']          ?? null,
+                    'address'           => $data['address']        ?? null,
+                    'city'              => $data['city']           ?? null,
+                    'province'          => $data['province']       ?? null,
+                    'zip_code'          => $data['zip_code']       ?? null,
+                    'payment_method'    => $data['payment_method'] ?? null,
                 ]
             );
-
-            // Sync role — replaces any existing role assignment
             $user->syncRoles([$data['role']]);
         }
 
-        // ── Print credentials table to console ──────────────
         $this->command->newLine();
-        $this->command->line('┌─────────────────────────────────────────────────────────────┐');
-        $this->command->line('│                     SEEDED ACCOUNTS                         │');
-        $this->command->line('├──────────┬───────────────────────┬──────────────┬───────────┤');
-        $this->command->line('│  Role    │  Email                │  Password    │  Access   │');
-        $this->command->line('├──────────┼───────────────────────┼──────────────┼───────────┤');
-        $this->command->line('│  admin   │  admin@ikea.ph        │  admin1234   │  Full     │');
-        $this->command->line('│  staff   │  staff@ikea.ph        │  staff1234   │  Orders   │');
-        $this->command->line('│  customer│  customer@ikea.ph     │  customer1234│  Shop     │');
-        $this->command->line('└──────────┴───────────────────────┴──────────────┴───────────┘');
+        $this->command->line('┌──────────────────────┬────────────────────────┬───────────────┬───────────────────────────┐');
+        $this->command->line('│  Role                │  Email                 │  Password     │  Demo Purpose             │');
+        $this->command->line('├──────────────────────┼────────────────────────┼───────────────┼───────────────────────────┤');
+        $this->command->line('│  admin               │  admin@ikea.ph         │  admin1234    │  Full admin panel         │');
+        $this->command->line('│  staff               │  staff@ikea.ph         │  staff1234    │  Orders & appointments    │');
+        $this->command->line('│  customer (user1)    │  user1@mail.com        │  password123  │  Shop & Cart              │');
+        $this->command->line('│  customer (user2)    │  user2@mail.com        │  password123  │  Orders & Checkout        │');
+        $this->command->line('│  customer (user3)    │  user3@mail.com        │  password123  │  Reviews & Products       │');
+        $this->command->line('│  customer (user4)    │  user4@mail.com        │  password123  │  Appointments & Profile   │');
+        $this->command->line('└──────────────────────┴────────────────────────┴───────────────┴───────────────────────────┘');
         $this->command->newLine();
-        $this->command->info('✅ 3 users seeded');
+        $this->command->info('✅ 6 users seeded');
     }
 }

@@ -114,6 +114,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|staff'])
     Route::post('products/preview', [ProductController::class, 'import'])->name('products.import');
     Route::post('products/confirm', [ProductController::class, 'confirmImport'])->name('products.confirm');
     Route::get('products/template', [ProductController::class, 'downloadTemplate'])->name('products.template');
+    
+    // Soft deletes
+    Route::get('products/trashed', [ProductController::class, 'trashed'])->name('products.trashed');
+    Route::patch('products/{id}/restore', [ProductController::class, 'restore'])->name('products.restore');
+    Route::delete('products/{id}/force-delete', [ProductController::class, 'forceDelete'])->name('products.force-delete');
+
+    // Products, cont.
     Route::resource('products', ProductController::class)->except(['show']);
     Route::delete('products/{product}/images/{image}', [ProductController::class, 'destroyImage'])->name('products.images.destroy');
 

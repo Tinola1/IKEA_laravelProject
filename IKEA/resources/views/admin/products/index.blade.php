@@ -7,7 +7,10 @@
                 <h2 class="admin-page-title">Products</h2>
                 <p class="admin-page-subtitle">Manage your product catalogue.</p>
             </div>
-            <a href="{{ route('admin.products.create') }}" class="admin-btn-primary">+ Add Product</a>
+            <div style="display:flex;gap:8px;">
+                <a href="{{ route('admin.products.trashed') }}" class="admin-btn-secondary">🗑 Trash</a>
+                <a href="{{ route('admin.products.create') }}" class="admin-btn-primary">+ Add Product</a>
+            </div>
         </div>
     </x-slot>
 
