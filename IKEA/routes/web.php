@@ -146,7 +146,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|staff'])
     Route::patch('users/{user}/status', [AdminUserController::class, 'toggleStatus'])->name('users.status');
     Route::delete('users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
     Route::post('users', [AdminUserController::class, 'store'])->name('users.store');
-    
+
     // Audit logs
     Route::get('audit-logs', [AdminAuditLogController::class, 'index'])->name('audit-logs.index');
 
@@ -161,10 +161,3 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|staff'])
     Route::post('sales', [InStoreSaleController::class, 'store'])->name('sales.store');
 
 });
-
-// ── Dev/test routes ──────────────────────────────────────────────
-Route::get('/test-receipt/{order}', function (\App\Models\Order $order) {
-    $order->load('items.product', 'user');
-    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('emails.receipt', compact('order'));
-    return $pdf->stream('receipt.pdf');
-})->middleware('auth');
