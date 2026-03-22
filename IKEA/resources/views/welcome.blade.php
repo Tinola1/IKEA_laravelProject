@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="title">Furniture &amp; Home Furnishings</x-slot>
+    <x-slot name="title">Welcome!</x-slot>
 
     {{-- ── MAIN ── --}}
     <main id="main-content">

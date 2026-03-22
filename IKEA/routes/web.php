@@ -39,7 +39,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // ── Authenticated user routes ────────────────────────────────────
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
 
 // Reviews (customer)
 Route::post('/shop/{product}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
@@ -87,11 +87,17 @@ Route::delete('/shop/{product}/reviews/{review}', [ReviewController::class, 'des
 
 });
 
+// ── Unauthenticated /admin route ─────────────────────────────────
+Route::get('/admin', function () {
+    return redirect()->route('admin.dashboard');
+});
+
 // ── Admin routes ─────────────────────────────────────────────────
-Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|staff'])->group(function () {
+
     // Reviews (admin)
-Route::get('reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
-Route::delete('reviews/{review}', [AdminReviewController::class, 'destroy'])->name('reviews.destroy');
+    Route::get('reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
+    Route::delete('reviews/{review}', [AdminReviewController::class, 'destroy'])->name('reviews.destroy');
 
     // Dashboard
     Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
