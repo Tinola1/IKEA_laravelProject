@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-admin-layout>
     <x-slot name="header">
         <div class="admin-page-header">
             <div>
@@ -102,7 +102,7 @@
         </div>
 
     </div>
-    
+
     @push('scripts')
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/jquery.dataTables.min.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -123,4 +123,4 @@
         </script>
     @endpush
 
-</x-app-layout>
+</x-admin-layout>

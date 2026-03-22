@@ -1,146 +1,175 @@
 <x-app-layout>
     <x-slot name="title">Checkout</x-slot>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Checkout</h2>
+        <div class="shop-page-header">
+            <div>
+                <h2 class="shop-page-title">Checkout</h2>
+                <p class="shop-page-subtitle">Complete your order details below.</p>
+            </div>
+        </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
-            <form method="POST" action="{{ route('checkout.store') }}" id="checkoutForm" novalidate>
-                @csrf
-                <div class="flex flex-col lg:flex-row gap-6">
+    <div class="customer-page-wide">
+        <form method="POST" action="{{ route('checkout.store') }}" id="checkoutForm" novalidate>
+            @csrf
+            <div class="checkout-layout">
 
-                    {{-- Left: Shipping & Payment --}}
-                    <div class="flex-1 space-y-6">
+                {{-- LEFT: Shipping & Payment --}}
+                <div class="checkout-main">
 
-                        {{-- Shipping Info --}}
-                        <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                            <h3 class="text-lg font-bold mb-4">Shipping Information</h3>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Full Name</label>
-                                    <input type="text" name="full_name" value="{{ old('full_name', Auth::user()->name) }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                                    @error('full_name') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Phone Number</label>
-                                    <input type="text" name="phone" value="{{ old('phone') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                                    @error('phone') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
-                                </div>
-                                <div class="md:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700">Street Address</label>
-                                    <input type="text" name="address" value="{{ old('address') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                                    @error('address') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">City</label>
-                                    <input type="text" name="city" value="{{ old('city') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                                    @error('city') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Province</label>
-                                    <input type="text" name="province" value="{{ old('province') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                                    @error('province') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">ZIP Code</label>
-                                    <input type="text" name="zip_code" value="{{ old('zip_code') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                                    @error('zip_code') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
-                                </div>
-                                <div class="md:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700">Order Notes (optional)</label>
-                                    <textarea name="notes" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">{{ old('notes') }}</textarea>
-                                </div>
+                    <div class="customer-card">
+                        <h3 class="customer-card-title">📦 Shipping Information</h3>
+                        <div class="checkout-grid-2">
+                            <div class="checkout-field">
+                                <label class="checkout-label">Full Name <span style="color:#CC0008;">*</span></label>
+                                <input type="text" name="full_name" class="checkout-input"
+                                       value="{{ old('full_name', auth()->user()->name) }}">
+                                @error('full_name')<p class="form-error">{{ $message }}</p>@enderror
+                            </div>
+                            <div class="checkout-field">
+                                <label class="checkout-label">Phone Number <span style="color:#CC0008;">*</span></label>
+                                <input type="text" name="phone" class="checkout-input"
+                                       value="{{ old('phone', auth()->user()->phone) }}"
+                                       placeholder="+63 912 345 6789">
+                                @error('phone')<p class="form-error">{{ $message }}</p>@enderror
                             </div>
                         </div>
-
-                        {{-- Payment Method --}}
-                        <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                            <h3 class="text-lg font-bold mb-4">Payment Method</h3>
-                            <div class="space-y-3">
-                                <label class="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer hover:border-blue-400 transition {{ old('payment_method', 'cod') == 'cod' ? 'border-blue-500 bg-blue-50' : 'border-gray-200' }}">
-                                    <input type="radio" name="payment_method" value="cod" {{ old('payment_method', 'cod') == 'cod' ? 'checked' : '' }} class="text-blue-600">
-                                    <div>
-                                        <div class="font-semibold">💵 Cash on Delivery</div>
-                                        <div class="text-sm text-gray-500">Pay when your order arrives</div>
-                                    </div>
-                                </label>
-                                <label class="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer hover:border-blue-400 transition {{ old('payment_method') == 'gcash' ? 'border-blue-500 bg-blue-50' : 'border-gray-200' }}">
-                                    <input type="radio" name="payment_method" value="gcash" {{ old('payment_method') == 'gcash' ? 'checked' : '' }} class="text-blue-600">
-                                    <div>
-                                        <div class="font-semibold">📱 GCash</div>
-                                        <div class="text-sm text-gray-500">Pay via GCash mobile wallet</div>
-                                    </div>
-                                </label>
-                                <label class="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer hover:border-blue-400 transition {{ old('payment_method') == 'bank_transfer' ? 'border-blue-500 bg-blue-50' : 'border-gray-200' }}">
-                                    <input type="radio" name="payment_method" value="bank_transfer" {{ old('payment_method') == 'bank_transfer' ? 'checked' : '' }} class="text-blue-600">
-                                    <div>
-                                        <div class="font-semibold">🏦 Bank Transfer</div>
-                                        <div class="text-sm text-gray-500">Transfer to our bank account</div>
-                                    </div>
-                                </label>
+                        <div class="checkout-field">
+                            <label class="checkout-label">Street Address <span style="color:#CC0008;">*</span></label>
+                            <input type="text" name="address" class="checkout-input"
+                                   value="{{ old('address', auth()->user()->address) }}">
+                            @error('address')<p class="form-error">{{ $message }}</p>@enderror
+                        </div>
+                        <div class="checkout-grid-2">
+                            <div class="checkout-field">
+                                <label class="checkout-label">City <span style="color:#CC0008;">*</span></label>
+                                <input type="text" name="city" class="checkout-input"
+                                       value="{{ old('city', auth()->user()->city) }}">
+                                @error('city')<p class="form-error">{{ $message }}</p>@enderror
                             </div>
-                            @error('payment_method') <p class="text-red-500 text-sm mt-2">{{ $message }}</p> @enderror
+                            <div class="checkout-field">
+                                <label class="checkout-label">Province <span style="color:#CC0008;">*</span></label>
+                                <input type="text" name="province" class="checkout-input"
+                                       value="{{ old('province', auth()->user()->province) }}">
+                                @error('province')<p class="form-error">{{ $message }}</p>@enderror
+                            </div>
+                        </div>
+                        <div class="checkout-grid-2">
+                            <div class="checkout-field">
+                                <label class="checkout-label">ZIP Code <span style="color:#CC0008;">*</span></label>
+                                <input type="text" name="zip_code" class="checkout-input"
+                                       value="{{ old('zip_code', auth()->user()->zip_code) }}">
+                                @error('zip_code')<p class="form-error">{{ $message }}</p>@enderror
+                            </div>
+                        </div>
+                        <div class="checkout-field" style="margin-top:4px;">
+                            <label class="checkout-label">Order Notes <span style="color:var(--ikea-gray);font-weight:400;">(optional)</span></label>
+                            <textarea name="notes" rows="2" class="checkout-input"
+                                      style="height:auto;padding:10px 14px;resize:vertical;"
+                                      placeholder="Special delivery instructions...">{{ old('notes') }}</textarea>
                         </div>
                     </div>
 
-                    {{-- Right: Order Summary --}}
-                    <div class="lg:w-96">
-                        <div class="bg-white shadow-sm sm:rounded-lg p-6 sticky top-4">
-                            <h3 class="text-lg font-bold mb-4">Order Summary</h3>
+                    <div class="customer-card">
+                        <h3 class="customer-card-title">💳 Payment Method</h3>
+                        @php $selectedPayment = old('payment_method', auth()->user()->payment_method ?? 'cod'); @endphp
 
-                            <div class="space-y-3 mb-4">
-                                @foreach($cartItems as $item)
-                                <div class="flex justify-between items-center text-sm">
-                                    <div class="flex items-center gap-2">
-                                        <span class="bg-gray-100 text-gray-600 text-xs rounded px-1.5 py-0.5">{{ $item->quantity }}x</span>
-                                        <span class="text-gray-700">{{ $item->product->name }}</span>
-                                    </div>
-                                    <span class="font-medium">₱{{ number_format($item->product->price * $item->quantity, 2) }}</span>
-                                </div>
-                                @endforeach
+                        <label class="checkout-payment-option {{ $selectedPayment === 'cod' ? 'selected' : '' }}"
+                               onclick="selectCheckoutPayment(this)">
+                            <input type="radio" name="payment_method" value="cod"
+                                   {{ $selectedPayment === 'cod' ? 'checked' : '' }}>
+                            <span style="font-size:22px;">🚚</span>
+                            <div>
+                                <div class="checkout-payment-title">Cash on Delivery</div>
+                                <div class="checkout-payment-desc">Pay in cash when your order arrives</div>
                             </div>
-
-                            <div class="border-t pt-4 space-y-2">
-                                <div class="flex justify-between text-sm text-gray-600">
-                                    <span>Subtotal</span>
-                                    <span>₱{{ number_format($total, 2) }}</span>
-                                </div>
-                                <div class="flex justify-between text-sm text-gray-600">
-                                    <span>Shipping</span>
-                                    <span class="text-green-600">Free</span>
-                                </div>
-                                <div class="flex justify-between text-lg font-bold border-t pt-2">
-                                    <span>Total</span>
-                                    <span>₱{{ number_format($total, 2) }}</span>
-                                </div>
+                        </label>
+                        <label class="checkout-payment-option {{ $selectedPayment === 'gcash' ? 'selected' : '' }}"
+                               onclick="selectCheckoutPayment(this)">
+                            <input type="radio" name="payment_method" value="gcash"
+                                   {{ $selectedPayment === 'gcash' ? 'checked' : '' }}>
+                            <span style="font-size:22px;">📱</span>
+                            <div>
+                                <div class="checkout-payment-title">GCash</div>
+                                <div class="checkout-payment-desc">Pay via GCash mobile wallet</div>
                             </div>
-
-                            <button type="submit" class="w-full mt-6 bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition">
-                                Place Order
-                            </button>
-                            <a href="{{ route('cart.index') }}" class="block text-center mt-3 text-sm text-gray-500 hover:underline">← Back to Cart</a>
-                        </div>
+                        </label>
+                        <label class="checkout-payment-option {{ $selectedPayment === 'bank_transfer' ? 'selected' : '' }}"
+                               onclick="selectCheckoutPayment(this)">
+                            <input type="radio" name="payment_method" value="bank_transfer"
+                                   {{ $selectedPayment === 'bank_transfer' ? 'checked' : '' }}>
+                            <span style="font-size:22px;">🏦</span>
+                            <div>
+                                <div class="checkout-payment-title">Bank Transfer</div>
+                                <div class="checkout-payment-desc">Transfer directly to our bank account</div>
+                            </div>
+                        </label>
+                        @error('payment_method')<p class="form-error">{{ $message }}</p>@enderror
                     </div>
 
                 </div>
-            </form>
-        </div>
+
+                {{-- RIGHT: Summary --}}
+                <div class="checkout-summary-sticky">
+                    <div class="customer-card">
+                        <h3 class="customer-card-title">🧾 Order Summary</h3>
+
+                        @foreach($cartItems as $item)
+                        <div class="checkout-summary-item">
+                            <div>
+                                <span class="checkout-summary-qty">{{ $item->quantity }}×</span>
+                                <span class="checkout-summary-name">{{ $item->product->name }}</span>
+                            </div>
+                            <span class="checkout-summary-price">₱{{ number_format($item->product->price * $item->quantity, 2) }}</span>
+                        </div>
+                        @endforeach
+
+                        <div class="checkout-totals">
+                            <div class="checkout-totals-row">
+                                <span>Subtotal</span>
+                                <span>₱{{ number_format($total, 2) }}</span>
+                            </div>
+                            <div class="checkout-totals-row">
+                                <span>Shipping</span>
+                                <span style="color:#2e7d32;font-weight:700;">
+                                    {{ $total >= 5000 ? 'Free' : '₱350.00' }}
+                                </span>
+                            </div>
+                            <div class="checkout-totals-row grand">
+                                <span>Total</span>
+                                <span>₱{{ number_format($total >= 5000 ? $total : $total + 350, 2) }}</span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="checkout-submit-btn">Place Order</button>
+                        <a href="{{ route('cart.index') }}"
+                           style="display:block;text-align:center;margin-top:10px;font-size:var(--text-sm);color:var(--ikea-gray);text-decoration:none;font-weight:600;">
+                            ← Back to Cart
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </form>
     </div>
+
     <script>
+    function selectCheckoutPayment(label) {
+        document.querySelectorAll('.checkout-payment-option').forEach(el => el.classList.remove('selected'));
+        label.classList.add('selected');
+    }
+
     document.getElementById('checkoutForm').addEventListener('submit', function(e) {
         let valid = true;
         document.querySelectorAll('.js-error').forEach(el => el.remove());
-        document.querySelectorAll('.js-invalid').forEach(el => el.style.borderColor = '');
 
         const rules = [
-            { name: 'full_name',       label: 'Full name',       required: true, minLength: 2 },
-            { name: 'phone',           label: 'Phone number',    required: true, minLength: 7 },
-            { name: 'address',         label: 'Address',         required: true },
-            { name: 'city',            label: 'City',            required: true },
-            { name: 'province',        label: 'Province',        required: true },
-            { name: 'zip_code',        label: 'ZIP code',        required: true },
+            { name: 'full_name', label: 'Full name',    required: true, minLength: 2 },
+            { name: 'phone',     label: 'Phone number', required: true, minLength: 7 },
+            { name: 'address',   label: 'Address',      required: true },
+            { name: 'city',      label: 'City',         required: true },
+            { name: 'province',  label: 'Province',     required: true },
+            { name: 'zip_code',  label: 'ZIP code',     required: true },
         ];
 
         rules.forEach(rule => {
@@ -148,17 +177,11 @@
             if (!input) return;
             const val = input.value.trim();
             let error = null;
-
-            if (rule.required && !val) {
-                error = rule.label + ' is required.';
-            } else if (rule.minLength && val.length < rule.minLength) {
-                error = rule.label + ' is too short.';
-            }
-
+            if (rule.required && !val) error = rule.label + ' is required.';
+            else if (rule.minLength && val.length < rule.minLength) error = rule.label + ' is too short.';
             if (error) {
                 valid = false;
                 input.style.borderColor = '#CC0008';
-                input.classList.add('js-invalid');
                 const msg = document.createElement('p');
                 msg.className = 'js-error';
                 msg.style.cssText = 'color:#CC0008;font-size:12px;margin-top:4px;font-weight:600;';
@@ -167,7 +190,6 @@
             }
         });
 
-        // Payment method
         const payment = document.querySelector('[name="payment_method"]:checked');
         if (!payment) {
             valid = false;
@@ -175,20 +197,19 @@
             msg.className = 'js-error';
             msg.style.cssText = 'color:#CC0008;font-size:12px;margin-top:4px;font-weight:600;';
             msg.textContent = 'Please select a payment method.';
-            const paymentSection = document.querySelector('[name="payment_method"]').closest('div');
-            paymentSection.appendChild(msg);
+            document.querySelector('.checkout-payment-option').parentNode.appendChild(msg);
         }
 
         if (!valid) e.preventDefault();
     });
 
-    document.querySelectorAll('input, select, textarea').forEach(input => {
+    document.querySelectorAll('.checkout-input').forEach(input => {
         input.addEventListener('input', function() {
             this.style.borderColor = '';
-            this.classList.remove('js-invalid');
             const err = this.parentNode.querySelector('.js-error');
             if (err) err.remove();
         });
     });
     </script>
+
 </x-app-layout>

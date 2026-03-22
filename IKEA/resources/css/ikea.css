@@ -2307,3 +2307,110 @@ input.auth-input:focus {
 .pos-cart-remove { background:none; border:none; color:var(--ikea-gray); font-size:16px; cursor:pointer; padding:4px; }
 .pos-cart-remove:hover { color:#CC0008; }
 .pos-total-bar { display:flex; justify-content:space-between; align-items:center; border-top:2px solid var(--ikea-border); margin-top:var(--space-sm); padding-top:var(--space-sm); font-weight:700; font-size:var(--text-md); }
+/* ── CUSTOMER PAGES ───────────────────────────────────── */
+.customer-page { padding: var(--space-lg); max-width: 1100px; margin: 0 auto; }
+.customer-page-wide { padding: var(--space-lg); max-width: 1300px; margin: 0 auto; }
+.customer-card { background: white; border: 1px solid var(--ikea-border); border-radius: 10px; padding: var(--space-md); box-shadow: var(--shadow-sm); }
+.customer-card-title { font-size: var(--text-lg); font-weight: 800; color: var(--ikea-dark); margin-bottom: var(--space-sm); padding-bottom: var(--space-xs); border-bottom: 2px solid var(--ikea-border); }
+.customer-flash { padding: 12px var(--space-md); border-radius: 6px; font-size: var(--text-sm); font-weight: 600; margin-bottom: var(--space-sm); }
+.customer-flash.success { background: #e8f5e9; color: #2e7d32; border-left: 4px solid #4caf50; }
+.customer-flash.error   { background: #ffebee; color: #CC0008; border-left: 4px solid #CC0008; }
+.customer-empty { text-align: center; padding: var(--space-xl); color: var(--ikea-gray); }
+.customer-empty a { color: var(--ikea-blue); font-weight: 700; text-decoration: none; }
+.customer-empty a:hover { text-decoration: underline; }
+.customer-btn-primary { display: inline-block; background: var(--ikea-blue); color: white; padding: 10px 24px; border-radius: 40px; font-size: var(--text-sm); font-weight: 700; text-decoration: none; font-family: 'Noto Sans', sans-serif; border: none; cursor: pointer; transition: background var(--transition-fast); }
+.customer-btn-primary:hover { background: #004a8c; }
+.customer-btn-secondary { display: inline-block; background: var(--ikea-light); color: var(--ikea-dark); padding: 10px 24px; border-radius: 40px; font-size: var(--text-sm); font-weight: 700; text-decoration: none; font-family: 'Noto Sans', sans-serif; border: none; cursor: pointer; transition: background var(--transition-fast); }
+.customer-btn-secondary:hover { background: var(--ikea-border); }
+.customer-btn-danger { display: inline-block; background: #CC0008; color: white; padding: 10px 24px; border-radius: 40px; font-size: var(--text-sm); font-weight: 700; font-family: 'Noto Sans', sans-serif; border: none; cursor: pointer; transition: background var(--transition-fast); }
+.customer-btn-danger:hover { background: #a8000a; }
+
+/* Cart */
+.cart-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+.cart-table th { padding: 10px 16px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--ikea-gray); background: var(--ikea-light); border-bottom: 1px solid var(--ikea-border); }
+.cart-table td { padding: 14px 16px; border-bottom: 1px solid var(--ikea-border); vertical-align: middle; color: var(--ikea-dark); }
+.cart-table tbody tr:last-child td { border-bottom: none; }
+.cart-product-img { width: 56px; height: 56px; object-fit: cover; border-radius: 6px; border: 1px solid var(--ikea-border); }
+.cart-qty-input { width: 64px; padding: 6px 8px; border: 1.5px solid var(--ikea-border); border-radius: 6px; font-size: var(--text-sm); font-family: 'Noto Sans', sans-serif; text-align: center; }
+.cart-qty-input:focus { outline: none; border-color: var(--ikea-blue); }
+.cart-update-btn { padding: 5px 12px; background: var(--ikea-blue); color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: 'Noto Sans', sans-serif; }
+.cart-remove-btn { padding: 5px 12px; background: #ffebee; color: #CC0008; border: 1px solid #ffcdd2; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: 'Noto Sans', sans-serif; }
+.cart-remove-btn:hover { background: #CC0008; color: white; }
+.cart-total-bar { display: flex; justify-content: flex-end; align-items: center; gap: var(--space-md); padding: var(--space-md) 16px; border-top: 2px solid var(--ikea-border); }
+.cart-total-label { font-size: var(--text-xl); font-weight: 900; color: var(--ikea-dark); }
+
+/* Checkout */
+.checkout-layout { display: grid; grid-template-columns: 1fr 380px; gap: var(--space-md); align-items: start; }
+.checkout-main { display: flex; flex-direction: column; gap: var(--space-md); }
+.checkout-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: var(--space-sm); }
+.checkout-field:last-child { margin-bottom: 0; }
+.checkout-label { font-size: var(--text-sm); font-weight: 700; color: var(--ikea-dark); }
+.checkout-input { width: 100%; padding: 10px 14px; border: 1.5px solid var(--ikea-border); border-radius: 8px; font-size: var(--text-base); font-family: 'Noto Sans', sans-serif; color: var(--ikea-dark); transition: border-color var(--transition-fast); }
+.checkout-input:focus { outline: none; border-color: var(--ikea-blue); }
+.checkout-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm); }
+.checkout-payment-option { display: flex; align-items: center; gap: var(--space-sm); padding: 14px; border: 1.5px solid var(--ikea-border); border-radius: 8px; cursor: pointer; transition: all var(--transition-fast); margin-bottom: 8px; }
+.checkout-payment-option:hover { border-color: var(--ikea-blue); background: #f5f9ff; }
+.checkout-payment-option.selected { border-color: var(--ikea-blue); background: #e3f2fd; }
+.checkout-payment-option input[type="radio"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--ikea-blue); }
+.checkout-payment-title { font-size: var(--text-base); font-weight: 700; color: var(--ikea-dark); }
+.checkout-payment-desc  { font-size: var(--text-sm); color: var(--ikea-gray); }
+.checkout-summary-sticky { position: sticky; top: 16px; }
+.checkout-summary-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--ikea-border); font-size: var(--text-sm); }
+.checkout-summary-item:last-child { border-bottom: none; }
+.checkout-summary-qty { background: var(--ikea-light); color: var(--ikea-gray); font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+.checkout-summary-name { color: var(--ikea-dark); margin-left: 8px; }
+.checkout-summary-price { font-weight: 700; }
+.checkout-totals { border-top: 2px solid var(--ikea-border); margin-top: var(--space-xs); padding-top: var(--space-sm); }
+.checkout-totals-row { display: flex; justify-content: space-between; font-size: var(--text-sm); color: var(--ikea-gray); padding: 4px 0; }
+.checkout-totals-row.grand { font-size: var(--text-lg); font-weight: 900; color: var(--ikea-dark); border-top: 1px solid var(--ikea-border); padding-top: var(--space-xs); margin-top: 4px; }
+.checkout-submit-btn { width: 100%; height: 52px; background: var(--ikea-yellow); color: var(--ikea-dark); border: none; border-radius: 40px; font-size: var(--text-base); font-weight: 800; font-family: 'Noto Sans', sans-serif; cursor: pointer; margin-top: var(--space-md); transition: background var(--transition-fast); }
+.checkout-submit-btn:hover { background: #f0cc00; }
+
+/* Orders list */
+.orders-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+.orders-table th { padding: 10px 16px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--ikea-gray); background: var(--ikea-light); border-bottom: 1px solid var(--ikea-border); }
+.orders-table td { padding: 14px 16px; border-bottom: 1px solid var(--ikea-border); color: var(--ikea-dark); }
+.orders-table tbody tr:last-child td { border-bottom: none; }
+.orders-table tbody tr:hover { background: #fafafa; }
+
+/* Order detail */
+.order-detail-page { padding: var(--space-lg); max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--space-md); }
+.order-meta-bar { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: var(--space-sm); }
+.order-meta-text { font-size: var(--text-sm); color: var(--ikea-gray); line-height: 1.7; }
+.order-items-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--ikea-border); }
+.order-items-row:last-child { border-bottom: none; }
+.order-items-name { font-weight: 600; font-size: var(--text-base); }
+.order-items-meta { font-size: var(--text-sm); color: var(--ikea-gray); margin-top: 2px; }
+.order-items-price { font-weight: 800; font-size: var(--text-base); }
+.order-total-row { display: flex; justify-content: space-between; font-size: var(--text-xl); font-weight: 900; margin-top: var(--space-sm); padding-top: var(--space-sm); border-top: 2px solid var(--ikea-dark); }
+.order-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm); font-size: var(--text-sm); }
+.order-info-label { color: var(--ikea-gray); font-weight: 600; margin-bottom: 3px; }
+.order-info-value { font-weight: 700; color: var(--ikea-dark); }
+.order-actions { display: flex; gap: var(--space-xs); flex-wrap: wrap; }
+
+/* Dashboard */
+.customer-dashboard { padding: var(--space-lg); max-width: 700px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--space-md); }
+.customer-dashboard-welcome { font-size: var(--text-2xl); font-weight: 900; color: var(--ikea-dark); letter-spacing: -0.5px; }
+.customer-dashboard-links { display: flex; flex-direction: column; gap: 4px; }
+.customer-dashboard-link { display: flex; align-items: center; gap: 12px; padding: 14px var(--space-md); background: white; border: 1px solid var(--ikea-border); border-radius: 8px; color: var(--ikea-dark); text-decoration: none; font-weight: 600; font-size: var(--text-base); transition: all var(--transition-fast); }
+.customer-dashboard-link:hover { border-color: var(--ikea-blue); background: #f5f9ff; }
+.customer-dashboard-link-icon { font-size: 22px; width: 36px; text-align: center; }
+.customer-dashboard-link-desc { font-size: var(--text-sm); color: var(--ikea-gray); font-weight: 400; margin-top: 1px; }
+
+/* Checkout success */
+.order-success-page { padding: var(--space-lg); max-width: 680px; margin: 0 auto; }
+.order-success-card { background: white; border: 1px solid var(--ikea-border); border-radius: 12px; padding: var(--space-xl); text-align: center; box-shadow: var(--shadow-md); }
+.order-success-icon { font-size: 64px; margin-bottom: var(--space-sm); }
+.order-success-title { font-size: var(--text-2xl); font-weight: 900; color: var(--ikea-dark); margin-bottom: 8px; }
+.order-success-sub { font-size: var(--text-base); color: var(--ikea-gray); margin-bottom: var(--space-lg); }
+.order-success-details { background: var(--ikea-light); border-radius: 8px; padding: var(--space-md); text-align: left; margin-bottom: var(--space-lg); }
+.order-success-item { display: flex; justify-content: space-between; font-size: var(--text-sm); padding: 6px 0; border-bottom: 1px solid var(--ikea-border); }
+.order-success-item:last-child { border-bottom: none; }
+.order-success-total { display: flex; justify-content: space-between; font-size: var(--text-base); font-weight: 900; padding-top: var(--space-xs); margin-top: var(--space-xs); border-top: 2px solid var(--ikea-dark); }
+.order-success-meta { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm); font-size: var(--text-sm); margin-top: var(--space-sm); padding-top: var(--space-sm); border-top: 1px solid var(--ikea-border); }
+.order-success-meta-label { color: var(--ikea-gray); margin-bottom: 3px; }
+.order-success-meta-value { font-weight: 700; color: var(--ikea-dark); }
+.order-success-actions { display: flex; gap: var(--space-xs); justify-content: center; flex-wrap: wrap; }
+
+@media (max-width: 900px) { .checkout-layout { grid-template-columns: 1fr; } .checkout-summary-sticky { position: static; } }
+@media (max-width: 640px) { .checkout-grid-2 { grid-template-columns: 1fr; } .order-info-grid { grid-template-columns: 1fr; } .order-success-meta { grid-template-columns: 1fr; } .customer-page, .order-detail-page, .customer-dashboard, .order-success-page { padding: var(--space-md); } }
