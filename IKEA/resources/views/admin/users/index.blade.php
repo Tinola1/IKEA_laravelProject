@@ -161,22 +161,6 @@
         </div>
     </div>
 
-    <style>
-        .btn-user-delete {
-            padding: 5px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 700;
-            background: #CC0008;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-family: 'Noto Sans', sans-serif;
-            transition: background var(--transition-fast);
-        }
-        .btn-user-delete:hover { background: #a8000a; }
-    </style>
-
     @push('scripts')
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/jquery.dataTables.min.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>

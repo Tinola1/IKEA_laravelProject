@@ -143,23 +143,4 @@
         </div>
     </div>
 
-    <style>
-        .appt-status-banner {
-            padding: 14px var(--space-md);
-            border-radius: 8px;
-            font-size: var(--text-sm);
-            font-weight: 600;
-            line-height: 1.5;
-        }
-        .appt-status-banner.status-pending    { background:#fff3e0; color:#f57c00; border-left:4px solid #f57c00; }
-        .appt-status-banner.status-processing,
-        .appt-status-banner.status-confirmed  { background:#e3f2fd; color:#1565c0; border-left:4px solid #1565c0; }
-        .appt-status-banner.status-completed  { background:#e8f5e9; color:#2e7d32; border-left:4px solid #4caf50; }
-        .appt-status-banner.status-cancelled  { background:#ffebee; color:#CC0008; border-left:4px solid #CC0008; }
-        .appt-detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--space-sm); margin-bottom:var(--space-sm); }
-        .appt-detail-item { padding:10px 0; border-bottom:1px solid var(--ikea-border); }
-        .appt-detail-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--ikea-gray); margin-bottom:3px; }
-        .appt-detail-value { font-size:var(--text-base); font-weight:700; color:var(--ikea-dark); }
-    </style>
-
 </x-app-layout>

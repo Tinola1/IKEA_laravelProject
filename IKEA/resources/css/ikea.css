@@ -2151,3 +2151,159 @@ input.auth-input:focus {
     flex-shrink: 0;
 }
 .hero-search-btn:hover { background: #004a8c; }
+
+/* ── PROFILE PAGE ─────────────────────────────────────── */
+.profile-page { padding:var(--space-lg); max-width:1100px; margin:0 auto; display:flex; flex-direction:column; gap:var(--space-md); }
+.profile-flash { padding:12px var(--space-md); border-radius:6px; font-size:var(--text-sm); font-weight:600; }
+.profile-flash.success { background:#e8f5e9; color:#2e7d32; border-left:4px solid #4caf50; }
+.profile-grid { display:grid; grid-template-columns:1fr 280px; gap:var(--space-md); align-items:start; }
+.profile-main    { display:flex; flex-direction:column; gap:var(--space-md); }
+.profile-sidebar { display:flex; flex-direction:column; gap:var(--space-md); }
+.profile-card { padding:var(--space-md); }
+.profile-section-title { font-size:var(--text-base); font-weight:800; color:var(--ikea-dark); margin-bottom:var(--space-sm); padding-bottom:var(--space-xs); border-bottom:2px solid var(--ikea-border); display:flex; align-items:center; gap:8px; }
+.profile-section-hint { font-size:var(--text-sm); color:var(--ikea-gray); margin-bottom:var(--space-sm); margin-top:-8px; }
+.profile-badge-complete   { font-size:11px; font-weight:700; background:#e8f5e9; color:#2e7d32; padding:2px 8px; border-radius:40px; }
+.profile-badge-incomplete { font-size:11px; font-weight:700; background:#fff3e0; color:#f57c00; padding:2px 8px; border-radius:40px; }
+.avatar-section { display:flex; gap:var(--space-md); align-items:center; }
+.avatar-preview-wrap { position:relative; flex-shrink:0; }
+.avatar-preview { width:96px; height:96px; border-radius:50%; object-fit:cover; border:3px solid var(--ikea-border); }
+.avatar-edit-btn { position:absolute; bottom:0; right:0; width:28px; height:28px; background:var(--ikea-yellow); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; cursor:pointer; border:2px solid white; }
+.avatar-name  { font-size:var(--text-lg); font-weight:800; color:var(--ikea-dark); }
+.avatar-email { font-size:var(--text-sm); color:var(--ikea-gray); margin-top:2px; }
+.avatar-role  { font-size:11px; font-weight:700; color:var(--ikea-blue); text-transform:uppercase; letter-spacing:.5px; margin-top:4px; }
+.avatar-upload-label { display:inline-block; margin-top:var(--space-xs); font-size:var(--text-sm); font-weight:700; color:var(--ikea-blue); text-decoration:underline; cursor:pointer; }
+.avatar-input { display:none; }
+.avatar-hint  { font-size:11px; color:var(--ikea-gray); margin-top:4px; }
+.profile-field  { display:flex; flex-direction:column; gap:6px; margin-bottom:var(--space-sm); }
+.profile-field:last-child { margin-bottom:0; }
+.profile-label  { font-size:var(--text-sm); font-weight:700; color:var(--ikea-dark); }
+.profile-input  { width:100%; padding:10px 12px; border:1.5px solid var(--ikea-border); border-radius:6px; font-size:var(--text-base); font-family:'Noto Sans',sans-serif; color:var(--ikea-dark); background:white; transition:border-color var(--transition-fast); }
+.profile-input:focus { outline:none; border-color:var(--ikea-blue); box-shadow:0 0 0 3px rgba(0,88,163,.1); }
+.profile-input.is-error { border-color:#CC0008; }
+.profile-error  { font-size:var(--text-sm); color:#CC0008; font-weight:600; }
+.profile-unverified { font-size:var(--text-sm); color:#f57c00; font-weight:600; }
+.profile-two-col   { display:grid; grid-template-columns:1fr 1fr; gap:var(--space-sm); }
+.profile-three-col { display:grid; grid-template-columns:1fr 1fr 1fr; gap:var(--space-sm); }
+.payment-options { display:flex; flex-direction:column; gap:var(--space-xs); }
+.payment-option { display:flex; align-items:center; gap:var(--space-sm); padding:14px var(--space-sm); border:1.5px solid var(--ikea-border); border-radius:8px; cursor:pointer; transition:all var(--transition-fast); position:relative; }
+.payment-option:hover { border-color:var(--ikea-blue); background:#f5f9ff; }
+.payment-option.selected { border-color:var(--ikea-blue); background:#e3f2fd; }
+.payment-option input[type="radio"] { display:none; }
+.payment-option-icon  { font-size:24px; flex-shrink:0; }
+.payment-option-title { font-size:var(--text-base); font-weight:700; color:var(--ikea-dark); }
+.payment-option-desc  { font-size:var(--text-sm); color:var(--ikea-gray); }
+.payment-option-check { margin-left:auto; font-size:16px; font-weight:900; color:var(--ikea-blue); opacity:0; transition:opacity var(--transition-fast); }
+.payment-option.selected .payment-option-check { opacity:1; }
+.profile-save-btn { width:100%; height:48px; background:var(--ikea-yellow); color:var(--ikea-dark); border:none; border-radius:40px; font-size:var(--text-base); font-weight:700; font-family:'Noto Sans',sans-serif; cursor:pointer; transition:background var(--transition-fast); margin-bottom:var(--space-xs); }
+.profile-save-btn:hover { background:#f0cc00; }
+.profile-cancel-link { display:block; text-align:center; font-size:var(--text-sm); font-weight:700; color:var(--ikea-gray); text-decoration:none; padding:8px; }
+.profile-cancel-link:hover { color:var(--ikea-dark); }
+.profile-delete-btn { width:100%; padding:10px; background:#ffebee; color:#CC0008; border:1.5px solid #ffcdd2; border-radius:40px; font-size:var(--text-sm); font-weight:700; font-family:'Noto Sans',sans-serif; cursor:pointer; transition:all var(--transition-fast); }
+.profile-delete-btn:hover { background:#CC0008; color:white; border-color:#CC0008; }
+.profile-meta-list { display:flex; flex-direction:column; gap:0; }
+.profile-meta-row  { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--ikea-border); font-size:var(--text-sm); }
+.profile-meta-row:last-child { border-bottom:none; }
+.profile-meta-label { color:var(--ikea-gray); font-weight:600; }
+.profile-meta-value { font-weight:700; color:var(--ikea-dark); }
+.profile-quick-links { display:flex; flex-direction:column; gap:4px; }
+.profile-quick-link  { display:flex; align-items:center; gap:10px; padding:10px; border-radius:6px; color:var(--ikea-dark); text-decoration:none; font-size:var(--text-sm); font-weight:600; transition:background var(--transition-fast); }
+.profile-quick-link:hover { background:var(--ikea-light); }
+.profile-modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; align-items:center; justify-content:center; }
+.profile-modal { background:white; border-radius:12px; padding:var(--space-xl); max-width:480px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3); }
+.profile-modal-title { font-size:var(--text-xl); font-weight:900; color:#CC0008; margin-bottom:var(--space-xs); }
+.profile-modal-desc  { font-size:var(--text-sm); color:var(--ikea-gray); line-height:1.6; margin-bottom:var(--space-md); }
+@media (max-width:900px) { .profile-grid { grid-template-columns:1fr; } .profile-sidebar { order:-1; } .profile-two-col { grid-template-columns:1fr; } .profile-three-col { grid-template-columns:1fr 1fr; } }
+@media (max-width:560px) { .profile-page { padding:var(--space-md); } .profile-three-col { grid-template-columns:1fr; } .avatar-section { flex-direction:column; align-items:flex-start; } }
+
+/* ── APPOINTMENTS ─────────────────────────────────────── */
+.appt-page { padding:var(--space-lg); max-width:1100px; margin:0 auto; }
+.appt-page-header { display:flex; align-items:center; justify-content:space-between; gap:var(--space-md); flex-wrap:wrap; }
+.appt-page-title    { font-size:var(--text-2xl); font-weight:900; color:var(--ikea-dark); letter-spacing:-0.5px; }
+.appt-page-subtitle { font-size:var(--text-sm); color:var(--ikea-gray); margin-top:2px; }
+.appt-btn-outline { padding:9px 20px; border:2px solid var(--ikea-blue); border-radius:40px; color:var(--ikea-blue); font-size:var(--text-sm); font-weight:700; text-decoration:none; transition:all var(--transition-fast); white-space:nowrap; }
+.appt-btn-outline:hover { background:var(--ikea-blue); color:white; }
+.appt-layout  { display:grid; grid-template-columns:1fr 280px; gap:var(--space-md); align-items:start; margin-top:var(--space-md); }
+.appt-main    { display:flex; flex-direction:column; gap:var(--space-md); }
+.appt-sidebar { display:flex; flex-direction:column; gap:var(--space-md); }
+.appt-card { background:white; border:1px solid var(--ikea-border); border-radius:10px; padding:var(--space-md); box-shadow:0 1px 4px rgba(0,0,0,0.06); position:relative; }
+.appt-card-label { position:absolute; top:-12px; left:var(--space-md); background:var(--ikea-blue); color:white; font-size:11px; font-weight:700; padding:3px 12px; border-radius:40px; text-transform:uppercase; letter-spacing:.5px; }
+.appt-card-title { font-size:var(--text-base); font-weight:800; color:var(--ikea-dark); margin-bottom:var(--space-sm); padding-bottom:var(--space-xs); border-bottom:2px solid var(--ikea-border); }
+.appt-field  { display:flex; flex-direction:column; gap:6px; margin-bottom:var(--space-sm); }
+.appt-label  { font-size:var(--text-sm); font-weight:700; color:var(--ikea-dark); }
+.required    { color:#CC0008; }
+.appt-input  { width:100%; height:44px; padding:0 14px; border:1.5px solid var(--ikea-border); border-radius:8px; font-size:var(--text-base); font-family:'Noto Sans',sans-serif; color:var(--ikea-dark); background:white; transition:border-color .15s, box-shadow .15s; }
+.appt-input:focus { outline:none; border-color:var(--ikea-blue); box-shadow:0 0 0 3px rgba(0,88,163,0.1); }
+.appt-textarea { height:auto; padding:12px 14px; resize:vertical; }
+.appt-hint   { font-size:11px; color:var(--ikea-gray); margin-top:2px; }
+.appt-error  { font-size:12px; color:#CC0008; font-weight:600; margin-top:2px; }
+.appt-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:var(--space-sm); }
+.appt-submit-btn { width:100%; height:48px; background:var(--ikea-yellow); color:var(--ikea-dark); border:none; border-radius:40px; font-size:var(--text-base); font-weight:800; font-family:'Noto Sans',sans-serif; cursor:pointer; transition:background var(--transition-fast); }
+.appt-submit-btn:hover { background:#f0cc00; }
+.appt-summary-row  { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--ikea-border); font-size:var(--text-sm); }
+.appt-summary-row:last-child { border-bottom:none; }
+.appt-summary-label { color:var(--ikea-gray); font-weight:600; }
+.appt-summary-value { font-weight:700; color:var(--ikea-dark); text-align:right; }
+.appt-status-banner { padding:14px var(--space-md); border-radius:8px; font-size:var(--text-sm); font-weight:600; line-height:1.5; }
+.appt-status-banner.status-pending    { background:#fff3e0; color:#f57c00; border-left:4px solid #f57c00; }
+.appt-status-banner.status-confirmed,
+.appt-status-banner.status-processing { background:#e3f2fd; color:#1565c0; border-left:4px solid #1565c0; }
+.appt-status-banner.status-completed  { background:#e8f5e9; color:#2e7d32; border-left:4px solid #4caf50; }
+.appt-status-banner.status-cancelled  { background:#ffebee; color:#CC0008; border-left:4px solid #CC0008; }
+.appt-detail-grid  { display:grid; grid-template-columns:1fr 1fr; gap:var(--space-sm); margin-bottom:var(--space-sm); }
+.appt-detail-item  { padding:10px 0; border-bottom:1px solid var(--ikea-border); }
+.appt-detail-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--ikea-gray); margin-bottom:3px; }
+.appt-detail-value { font-size:var(--text-base); font-weight:700; color:var(--ikea-dark); }
+@media (max-width:900px) { .appt-layout { grid-template-columns:1fr; } .appt-sidebar { order:-1; } .appt-grid-2 { grid-template-columns:1fr; } .appt-detail-grid { grid-template-columns:1fr; } }
+@media (max-width:560px) { .appt-page { padding:var(--space-md); } }
+
+/* ── PRODUCT DETAIL & REVIEWS ─────────────────────────── */
+.product-thumbnails { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+.product-thumb { width:60px; height:60px; object-fit:cover; border-radius:6px; border:2px solid var(--ikea-border); cursor:pointer; transition:border-color .15s; }
+.product-thumb:hover, .product-thumb.active { border-color:var(--ikea-blue); }
+.product-rating-summary { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.product-rating-stars .star-filled, .reviews-avg-stars .star-filled { color:#f59e0b; }
+.product-rating-stars .star-empty,  .reviews-avg-stars .star-empty  { color:#d1d5db; }
+.product-rating-stars .star-filled, .product-rating-stars .star-empty { font-size:18px; }
+.product-rating-score { font-size:16px; font-weight:800; color:var(--ikea-dark); }
+.product-rating-count { font-size:13px; color:var(--ikea-gray); }
+.reviews-section { max-width:860px; margin:var(--space-xl) auto 0; padding:0 var(--space-md) var(--space-xl); }
+.review-flash { padding:12px 16px; border-radius:8px; font-size:var(--text-sm); font-weight:600; margin-bottom:var(--space-md); }
+.review-flash.success { background:#e8f5e9; color:#2e7d32; border-left:4px solid #4caf50; }
+.review-flash.error   { background:#ffebee; color:#CC0008; border-left:4px solid #CC0008; }
+.reviews-header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:var(--space-sm); margin-bottom:var(--space-md); padding-bottom:var(--space-md); border-bottom:2px solid var(--ikea-border); }
+.reviews-title { font-size:var(--text-2xl); font-weight:900; color:var(--ikea-dark); letter-spacing:-0.5px; }
+.reviews-avg   { display:flex; align-items:center; gap:12px; margin-top:8px; }
+.reviews-avg-score { font-size:48px; font-weight:900; color:var(--ikea-dark); letter-spacing:-2px; line-height:1; }
+.reviews-avg-stars .star-filled, .reviews-avg-stars .star-empty { font-size:20px; }
+.reviews-avg-count { font-size:13px; color:var(--ikea-gray); margin-top:2px; }
+.review-write-btn { display:inline-flex; align-items:center; gap:6px; padding:10px 20px; background:var(--ikea-yellow); color:var(--ikea-dark); border:none; border-radius:40px; font-size:var(--text-sm); font-weight:700; font-family:'Noto Sans',sans-serif; cursor:pointer; transition:background var(--transition-fast); }
+.review-write-btn:hover { background:#f0cc00; }
+
+/* ── ADMIN STARS ──────────────────────────────────────── */
+.review-stars-admin .star-admin-filled { color:#f59e0b; font-size:15px; }
+.review-stars-admin .star-admin-empty  { color:#d1d5db; font-size:15px; }
+
+/* ── ADMIN BUTTONS ────────────────────────────────────── */
+.btn-user-delete { padding:5px 12px; border-radius:6px; font-size:12px; font-weight:700; background:#CC0008; color:white; border:none; cursor:pointer; font-family:'Noto Sans',sans-serif; transition:background var(--transition-fast); }
+.btn-user-delete:hover { background:#a8000a; }
+
+/* ── POS / IN-STORE SALES ─────────────────────────────── */
+.pos-search-wrap { position:relative; margin-bottom:var(--space-sm); }
+.pos-dropdown { position:absolute; top:100%; left:0; right:0; background:white; border:1.5px solid var(--ikea-blue); border-top:none; border-radius:0 0 8px 8px; z-index:50; max-height:280px; overflow-y:auto; box-shadow:0 8px 24px rgba(0,0,0,0.12); }
+.pos-dropdown-item { padding:10px 14px; cursor:pointer; border-bottom:1px solid var(--ikea-border); transition:background var(--transition-fast); }
+.pos-dropdown-item:hover { background:var(--ikea-light); }
+.pos-dropdown-item:last-child { border-bottom:none; }
+.pos-dropdown-name { font-size:14px; font-weight:700; color:var(--ikea-dark); }
+.pos-dropdown-meta { font-size:12px; color:var(--ikea-gray); margin-top:2px; }
+.pos-cart-item { display:flex; align-items:center; gap:var(--space-sm); padding:12px; background:var(--ikea-light); border-radius:8px; }
+.pos-cart-info { flex:1; }
+.pos-cart-name  { font-size:14px; font-weight:700; color:var(--ikea-dark); }
+.pos-cart-price { font-size:12px; color:var(--ikea-gray); }
+.pos-cart-qty   { display:flex; align-items:center; gap:8px; }
+.pos-qty-btn    { width:28px; height:28px; border-radius:50%; border:1.5px solid var(--ikea-border); background:white; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all var(--transition-fast); }
+.pos-qty-btn:hover { border-color:var(--ikea-blue); color:var(--ikea-blue); }
+.pos-qty-val    { font-size:15px; font-weight:800; min-width:24px; text-align:center; }
+.pos-cart-subtotal { font-size:14px; font-weight:800; color:var(--ikea-dark); min-width:80px; text-align:right; }
+.pos-cart-remove { background:none; border:none; color:var(--ikea-gray); font-size:16px; cursor:pointer; padding:4px; }
+.pos-cart-remove:hover { color:#CC0008; }
+.pos-total-bar { display:flex; justify-content:space-between; align-items:center; border-top:2px solid var(--ikea-border); margin-top:var(--space-sm); padding-top:var(--space-sm); font-weight:700; font-size:var(--text-md); }

@@ -102,12 +102,7 @@
         </div>
 
     </div>
-
-    <style>
-        .review-stars-admin .star-admin-filled { color:#f59e0b; font-size:15px; }
-        .review-stars-admin .star-admin-empty  { color:#d1d5db; font-size:15px; }
-    </style>
-
+    
     @push('scripts')
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/jquery.dataTables.min.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
