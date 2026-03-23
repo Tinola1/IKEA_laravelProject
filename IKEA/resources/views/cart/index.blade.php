@@ -42,7 +42,7 @@
                     </thead>
                     <tbody>
                         @foreach($cartItems as $item)
-                        <tr>
+                        <tr data-price="{{ $item->product->price }}">
                             <td>
                                 <div style="display:flex;align-items:center;gap:12px;">
                                     @if($item->product->image)
@@ -66,7 +66,7 @@
                                     <button type="submit" class="cart-update-btn">Update</button>
                                 </form>
                             </td>
-                            <td style="font-weight:700;">₱{{ number_format($item->product->price * $item->quantity, 2) }}</td>
+                            <td style="font-weight:700;" class="cart-subtotal">₱{{ number_format($item->product->price * $item->quantity, 2) }}</td>
                             <td>
                                 <form action="{{ route('cart.remove', $item) }}" method="POST"
                                       onsubmit="return confirm('Remove this item?')">
@@ -96,7 +96,7 @@
     </div>
 
     <script>
-    document.querySelectorAll('form[action*="cart.update"], form[action*="cart/update"]').forEach(function(form) {
+    document.querySelectorAll('form[action*="cart/update"]').forEach(function(form) {
         form.addEventListener('submit', function(e) {
             const input = this.querySelector('[name="quantity"]');
             const existing = this.querySelector('.js-error');
@@ -117,12 +117,22 @@
                 input.parentNode.appendChild(msg);
             }
         });
+
         const input = form.querySelector('[name="quantity"]');
         if (input) {
             input.addEventListener('input', function() {
                 this.style.borderColor = '';
                 const err = this.parentNode.querySelector('.js-error');
                 if (err) err.remove();
+
+                // Live subtotal update
+                const row   = this.closest('tr');
+                const price = parseFloat(row.dataset.price || 0);
+                const qty   = parseInt(this.value) || 1;
+                const sub   = row.querySelector('.cart-subtotal');
+                if (sub && price) {
+                    sub.textContent = '₱' + (price * qty).toLocaleString('en-PH', {minimumFractionDigits:2, maximumFractionDigits:2});
+                }
             });
         }
     });

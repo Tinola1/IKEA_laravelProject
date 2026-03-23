@@ -22,8 +22,16 @@ class CartController extends Controller
 
     public function add(Request $request, Product $product)
     {
+        // 1. Grab the quantity from the form request, defaulting to 1
+        $requestedQty = (int) $request->input('quantity', 1);
+
         if (!$product->is_available || $product->stock < 1) {
             return back()->with('error', 'This product is not available.');
+        }
+
+        // 2. Prevent users from trying to add more than the total stock at once
+        if ($requestedQty > $product->stock) {
+            return back()->with('error', 'Not enough stock available.');
         }
 
         $cartItem = Cart::where('user_id', Auth::id())
@@ -31,16 +39,20 @@ class CartController extends Controller
             ->first();
 
         if ($cartItem) {
-            $newQty = $cartItem->quantity + 1;
+            // 3. Add the requested quantity to what's already in the cart
+            $newQty = $cartItem->quantity + $requestedQty;
+            
+            // Make sure the combined total doesn't exceed available stock
             if ($newQty > $product->stock) {
-                return back()->with('error', 'Not enough stock available.');
+                return back()->with('error', 'Cannot add that many. Not enough stock available.');
             }
             $cartItem->update(['quantity' => $newQty]);
         } else {
+            // 4. Create the new cart record with the requested quantity
             Cart::create([
                 'user_id' => Auth::id(),
                 'product_id' => $product->id,
-                'quantity' => 1,
+                'quantity' => $requestedQty,
             ]);
         }
 

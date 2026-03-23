@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Review;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -29,23 +30,27 @@ class ReviewController extends Controller
             ->exists();
 
         if (!$hasPurchased) {
-            return back()->with('review_error', 'You can only review products you have purchased.');
+            return redirect()->route('shop.show', $product)->with('review_error', 'You can only review products you have purchased.');
         }
 
         // Prevent duplicate review
         if (Review::where('user_id', Auth::id())->where('product_id', $product->id)->exists()) {
-            return back()->with('review_error', 'You have already reviewed this product.');
+            return redirect()->route('shop.show', $product)->with('review_error', 'You have already reviewed this product.');
         }
 
-        Review::create([
-            'user_id'    => Auth::id(),
-            'product_id' => $product->id,
-            'rating'     => $request->rating,
-            'title'      => $request->title,
-            'body'       => $request->body,
-        ]);
+        try {
+            Review::create([
+                'user_id'    => Auth::id(),
+                'product_id' => $product->id,
+                'rating'     => $request->rating,
+                'title'      => $request->title,
+                'body'       => $request->body,
+            ]);
+        } catch (UniqueConstraintViolationException) {
+            return redirect()->route('shop.show', $product)->with('review_error', 'You have already reviewed this product.');
+        }
 
-        return back()->with('review_success', 'Thank you for your review!');
+        return redirect()->route('shop.show', $product)->with('review_success', 'Thank you for your review!');
     }
 
     /**
@@ -76,7 +81,7 @@ class ReviewController extends Controller
             'body'   => $request->body,
         ]);
 
-        return back()->with('review_success', 'Your review has been updated.');
+        return redirect()->route('shop.show', $product)->with('review_success', 'Your review has been updated.');
     }
 
     /**
@@ -88,6 +93,6 @@ class ReviewController extends Controller
 
         $review->delete();
 
-        return back()->with('review_success', 'Your review has been removed.');
+        return redirect()->route('shop.show', $product)->with('review_success', 'Your review has been removed.');
     }
 }

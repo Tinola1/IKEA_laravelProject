@@ -33,7 +33,27 @@
                     </div>
                 @endif
 
-               
+                {{-- Thumbnail strip (primary + additional photos) --}}
+                @php
+                    $allImages = collect();
+                    if ($product->image) {
+                        $allImages->push(['src' => Storage::url($product->image), 'alt' => $product->name]);
+                    }
+                    foreach ($product->productImages as $img) {
+                        $allImages->push(['src' => Storage::url($img->path), 'alt' => $product->name]);
+                    }
+                @endphp
+
+                @if($allImages->count() > 1)
+                    <div class="product-thumbnails">
+                        @foreach($allImages as $index => $image)
+                            <img src="{{ $image['src'] }}"
+                                 alt="{{ $image['alt'] }}"
+                                 class="product-thumb {{ $index === 0 ? 'active' : '' }}"
+                                 onclick="switchImage(this, '{{ $image['src'] }}')">
+                        @endforeach
+                    </div>
+                @endif
             </div>
 
             {{-- ── INFO PANEL ── --}}
@@ -78,9 +98,20 @@
                 <div class="product-detail-actions">
                     @auth
                         @if($product->stock > 0 && $product->is_available)
-                            <form action="{{ route('cart.add', $product) }}" method="POST">
+                            <form action="{{ route('cart.add', $product) }}" method="POST"
+                                  onsubmit="clampQty()">
                                 @csrf
-                                <button type="submit" class="product-detail-add-btn">Add to Cart</button>
+                                <div class="product-qty-row">
+                                    <div class="product-qty-control">
+                                        <button type="button" class="product-qty-btn" onclick="changeQty(-1)">−</button>
+                                        <input type="number" name="quantity" id="qtyInput"
+                                               value="1" min="1" max="{{ $product->stock }}"
+                                               class="product-qty-input">
+                                        <button type="button" class="product-qty-btn" onclick="changeQty(1)">+</button>
+                                    </div>
+                                    <button type="submit" class="product-detail-add-btn product-detail-add-btn--flex">Add to Cart</button>
+                                </div>
+                                <p class="product-qty-hint">Max {{ $product->stock }} available</p>
                             </form>
                         @else
                             <button disabled class="product-detail-add-btn product-detail-add-btn--disabled">
@@ -203,7 +234,8 @@
                             </div>
 
                             <div style="display:flex;gap:10px;align-items:center;">
-                                <button type="submit" class="review-submit-btn">Submit Review</button>
+                                <button type="submit" class="review-submit-btn"
+                                        onclick="this.disabled=true;this.textContent='Submitting…';this.form.submit();">Submit Review</button>
                                 <button type="button"
                                         onclick="document.getElementById('writeReviewForm').style.display='none';document.querySelector('.review-write-btn').style.display='inline-flex';"
                                         class="review-cancel-btn">Cancel</button>
@@ -332,7 +364,18 @@
     </div>
 
     <script>
-        // Image switcher
+        // Quantity selector
+        const maxStock = {{ $product->stock }};
+        function changeQty(delta) {
+            const input = document.getElementById('qtyInput');
+            const newVal = Math.min(Math.max(1, parseInt(input.value) + delta), maxStock);
+            input.value = newVal;
+        }
+        function clampQty() {
+            const input = document.getElementById('qtyInput');
+            const val = parseInt(input.value) || 1;
+            input.value = Math.min(Math.max(1, val), maxStock);
+        }
         function switchImage(thumb, src) {
             document.getElementById('mainImage').src = src;
             document.querySelectorAll('.product-thumb').forEach(t => t.classList.remove('active'));
@@ -364,7 +407,7 @@
             f.style.display = f.style.display === 'none' ? 'block' : 'none';
         }
 
-        // Highlight stars on hover
+        // Highlight stars on hover — restore active state on mouseleave
         document.querySelectorAll('.star-picker').forEach(picker => {
             const stars = picker.querySelectorAll('.star-pick');
             stars.forEach((star, idx) => {
@@ -372,7 +415,9 @@
                     stars.forEach((s, i) => s.style.color = i <= idx ? '#f59e0b' : '#d1d5db');
                 });
                 star.addEventListener('mouseleave', () => {
-                    stars.forEach(s => s.style.color = '');
+                    stars.forEach(s => {
+                        s.style.color = s.classList.contains('active') ? '#f59e0b' : '#d1d5db';
+                    });
                 });
             });
         });

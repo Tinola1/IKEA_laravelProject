@@ -10,7 +10,7 @@
                 <span class="hero-tag">New Collection 2025</span>
                 <h1>Beautiful homes<br>start <span>here.</span></h1>
                 <p>Discover furniture and home furnishings that make everyday life better — designed for real life at prices that make sense.</p>
-                <form method="GET" action="{{ route('home') }}" class="hero-search-form">
+                <form method="GET" action="{{ route('shop.index') }}" class="hero-search-form">
                     <div class="hero-search-wrap">
                         <input type="text"
                             name="search"
@@ -84,7 +84,7 @@
                     <span class="icon" aria-hidden="true">🏠</span> All
                 </a>
                 @foreach($categories as $category)
-                    <a href="{{ route('shop.index') }}?category={{ $category->slug }}"
+                    <a href="{{ route('shop.index') }}?category={{ $category->id }}"
                        class="category-chip"
                        role="listitem">
                         <span class="icon" aria-hidden="true">
@@ -124,14 +124,14 @@
         {{-- ── PROMO BANNERS ── --}}
         <section aria-label="Promotions">
             <div class="promo-grid">
-                <a href="{{ route('shop.index') }}?search=&category=1" class="promo-card blue">
+                <a href="{{ route('shop.index') }}?category={{ $categories->firstWhere('slug','sofas-armchairs')?->id }}" class="promo-card blue">
                     <div class="promo-bg-shape" aria-hidden="true"></div>
                     <div class="label">Limited Time Offer</div>
                     <h3>Up to 30% off<br>Living Room<br>Essentials</h3>
                     <span class="link">Shop the sale →</span>
                 </a>
                 <div class="promo-stack">
-                    <a href="{{ route('shop.index') }}?category=beds-mattresses" class="promo-card dark">
+                    <a href="{{ route('shop.index') }}?category={{ $categories->firstWhere('slug','beds-mattresses')?->id }}" class="promo-card dark">
                         <div class="promo-bg-shape" aria-hidden="true"></div>
                         <div class="label">New Arrivals</div>
                         <h3>Bedroom<br>Collection</h3>

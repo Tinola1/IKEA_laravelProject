@@ -39,7 +39,7 @@ class ProductController extends Controller
             default      => $query->latest(),
         };
 
-        $products   = $query->paginate(12)->withQueryString();
+        $products   = $query->paginate(22)->withQueryString();
         $categories = Category::all();
         $minPrice   = Product::where('is_available', true)->min('price') ?? 0;
         $maxPrice   = Product::where('is_available', true)->max('price') ?? 100000;

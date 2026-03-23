@@ -71,12 +71,11 @@
 
                 <div class="form-group">
                     <label class="form-label">Additional Photos</label>
-                    <div class="extra-images-grid">
-                        <div id="newImagePreviews" style="display:contents;"></div>
-                        <label class="extra-image-add" title="Add photos">
+                    <div class="extra-images-grid" id="extraImagesGrid">
+                        <label class="extra-image-add" id="extraAddBtn" title="Add photos">
                             <span>+</span>
                             <input type="file" name="extra_images[]" accept="image/*" multiple
-                                class="extra-image-input" onchange="previewExtras(this)">
+                                class="extra-image-input" id="extraInput" onchange="previewExtras(this)">
                         </label>
                     </div>
                     @error('extra_images.*')<p class="form-error">{{ $message }}</p>@enderror
@@ -122,14 +121,29 @@
             document.getElementById('primaryAddBtn').style.display = 'flex';
             document.getElementById('primaryInput').value = '';
         }
+        let extraFiles = [];
+
+        function syncExtraInput() {
+            const dt = new DataTransfer();
+            extraFiles.forEach(f => dt.items.add(f));
+            document.getElementById('extraInput').files = dt.files;
+        }
+
         function previewExtras(input) {
-            const container = document.getElementById('newImagePreviews');
-            container.innerHTML = '';
+            const grid = document.getElementById('extraImagesGrid');
+            const addLabel = document.getElementById('extraAddBtn');
+
             Array.from(input.files).forEach(file => {
+                // Skip duplicates (same name + size)
+                if (extraFiles.some(f => f.name === file.name && f.size === file.size)) return;
+
+                extraFiles.push(file);
+
                 const reader = new FileReader();
                 reader.onload = e => {
                     const wrap = document.createElement('div');
-                    wrap.style.cssText = 'position:relative;';
+                    wrap.className = 'extra-image-wrap new-preview-wrap';
+                    wrap.style.cssText = 'position:relative;width:72px;height:72px;flex-shrink:0;';
 
                     const img = document.createElement('img');
                     img.src = e.target.result;
@@ -141,18 +155,19 @@
                     btn.title = 'Remove';
                     btn.textContent = '✕';
                     btn.onclick = () => {
+                        extraFiles = extraFiles.filter(f => f !== file);
                         wrap.remove();
-                        if (!document.getElementById('newImagePreviews').children.length) {
-                            document.querySelector('.extra-image-input').value = '';
-                        }
+                        syncExtraInput();
                     };
 
                     wrap.appendChild(img);
                     wrap.appendChild(btn);
-                    container.appendChild(wrap);
+                    grid.insertBefore(wrap, addLabel);
                 };
                 reader.readAsDataURL(file);
             });
+
+            syncExtraInput();
         }
         
         document.getElementById('createProductForm').addEventListener('submit', function(e) {
